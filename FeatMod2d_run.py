@@ -9,6 +9,7 @@ import math
 
 from FeatMod2d_ops import *
 from FeatMod2d_geo import *
+from FeatMod2d_init import *
 
 # create geometry and mesh
 nx, nz = (math.ceil(domain_x/resolution), math.ceil(domain_z/resolution))
@@ -37,9 +38,25 @@ mesh_surf, surf = find_surface(mesh)
 
 ax2 = axes[1]
 ax2.contourf(mesh_surf.T)
+plt.show(fig)
 
 #fig2, axes2 = plt.subplots(1,2, figsize=(4,4),
 #                           constrained_layout=True)
 #ax1 = axes2[0]
 #ax1.plot(surf)
+
+# initiate particles
+posn = np.random.uniform(0.0, 1.0, size=num_ptcl)*domain_x
+#theta = np.random.uniform(0.0, 1.0, size=num_ptcl)*180.0
+ux, uz = random_2d_vector(num_ptcl)
+
+fig2, axes2 = plt.subplots(1,2, figsize=(4,4),
+                           constrained_layout=True)
+ax1 = axes2[0]
+ax1.plot(ux, uz, 'o')
+plt.show(fig2)
+
+
+# x0=posn, y0=domain_y, theta = th0
+# (y-y0)/(x-x0) = tan(th0)
 
