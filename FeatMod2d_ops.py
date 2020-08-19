@@ -3,4 +3,4 @@
 Feature Model 2D
 Operation parameters
 """
-num_ptcl = 100
+num_ptcl = 10

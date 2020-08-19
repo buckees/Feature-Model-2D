@@ -46,5 +46,5 @@ def find_surface(mesh):
                                 +mesh[i,(j-1)% nz]+mesh[i,(j+1) % nz]
                 if temp:
                     mesh_surf[i,j] = 2
-    return mesh_surf, surf
+    return mesh_surf, np.array(surf).T
     
