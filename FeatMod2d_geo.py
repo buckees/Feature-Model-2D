@@ -6,8 +6,7 @@ Geometry file
 import numpy as np
 import math
 
-domain_x = 100.0 # nm
-domain_z = 500.0 # nm
+domain_x, domain_z = 100.0, 500.0 # nm
 resolution = 1.0 # nm
 
 def create_mat():
@@ -46,5 +45,12 @@ def find_surface(mesh):
                                 +mesh[i,(j-1)% nz]+mesh[i,(j+1) % nz]
                 if temp:
                     mesh_surf[i,j] = 2
+    
+    for i in [0, nx-1]:
+        for j in range(1, nz-1):
+            if not mesh[i,j]:
+                mesh_surf[i,j] = -1
+                surf.append((i,j))
+    
     return mesh_surf, np.array(surf).T
     
