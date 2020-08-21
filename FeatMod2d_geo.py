@@ -52,5 +52,5 @@ def find_surface(mesh):
                 mesh_surf[i,j] = -1
                 surf.append((i,j))
     
-    return mesh_surf, np.array(surf).T
+    return np.array(surf).T
     
