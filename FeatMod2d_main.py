@@ -21,7 +21,7 @@ mesh.mat_input()
 mesh.find_surface()
 mesh.plot()
 
-Arp = PARTICLE('Ar+', 'Ion',  32.0,     1, num_ptcl)
+Arp = PARTICLE('Ar+', 'Ion',  32.0,     1)
 print(Arp)
 Arp.init_posn(width, height)
 Arp.init_vels()
@@ -29,17 +29,26 @@ Arp.init_plot()
 
 
 def hit_check(posn, mesh):
-    int_x, int_z = np.floor(Arp.posn)[:,0].astype(int)
+    int_x, int_z = Arp.posn.astype(int)
     ibdry = 0
-    if not (0 < int_x < mesh.nx-1):
-        ibdy = 1
+#    if not (0 < int_x < mesh.nx-1):
+#        ibdry = 1
     return mesh.mat[int_x, int_z], (int_x, int_z), ibdry
 
 delta_L = min(res_x, res_z)
-for i in range(100):
+fig, ax = plt.subplots(1,1, figsize=(2,8),
+                           constrained_layout=True)
+
+colMap = cm.Accent
+colMap.set_under(color='white')
+
+ax.contourf(mesh.mat.T, cmap = colMap, vmin = 0.2, extend='both')
+
+for i in range(1000):
     Arp.move_ptcl(delta_L)
+    Arp.posn[0] = Arp.posn[0] % mesh.width
+    ax.plot(Arp.posn[0], Arp.posn[1], 'ro')
     hit_mat, hit_idx, ibdry = hit_check(Arp.posn, mesh)
     if hit_mat or ibdry: break
-Arp.init_plot()
 
 
