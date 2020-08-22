@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Feature Model 2D
 Mesh file
@@ -49,7 +48,7 @@ class MESHGRID(object):
             itype = material[1]
             if itype == 'rect':
                 coord = material[2]
-                ncoord = rect_conv(coord)
+                ncoord = rect_conv(coord, self.res_x, self.res_z)
                 self.mat[ncoord[0]:ncoord[1], 
                          ncoord[2]:ncoord[3]] = mater[1]
     
@@ -90,14 +89,14 @@ class MESHGRID(object):
         plt.show(fig)
 
 
-def rect_conv(coord):
+def rect_conv(coord, res_x, res_z):
     ncoord = [math.ceil(coord[0]/res_x), math.ceil(coord[1]/res_z), 
               math.ceil(coord[2]/res_x), math.ceil(coord[3]/res_z)]
     return [ncoord[0], ncoord[0]+ncoord[2], ncoord[1], ncoord[1]+ncoord[3]]
         
 if __name__ == '__main__':
     from FeatMod2d_ops import width, height, res_x, res_z
-    mesh = Mesh(width, height, res_x, res_z)
+    mesh = MESHGRID(width, height, res_x, res_z)
     mesh.mat_input()
     mesh.find_surface()
     mesh.plot()
