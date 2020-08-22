@@ -79,11 +79,17 @@ class MESHGRID(object):
     def plot(self):        
         colMap = cm.Accent
         colMap.set_under(color='white')
+        
+        x = np.linspace(0.0, self.width, self.nx) 
+        z = np.linspace(0.0, self.height, self.nz) 
+        X, Z = np.meshgrid(x, z) 
 
         fig, axes = plt.subplots(1,2, figsize=(4,8),
                                    constrained_layout=True)
-        axes[0].contourf(self.mat.T, cmap = colMap, vmin = 0.2, extend='both')
-        axes[1].plot(self.surf[0, :], self.surf[1, :], 'o', )
+        axes[0].contourf(X, Z, self.mat.T, 
+            cmap = colMap, vmin = 0.2, extend='both')
+        axes[1].plot(self.surf[0, :]*self.res_x, self.surf[1, :]*self.res_z, 
+            'o', )
         axes[1].set_xlim(0, self.width)
         axes[1].set_ylim(0, self.height)
         plt.show(fig)

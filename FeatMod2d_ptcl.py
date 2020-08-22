@@ -35,13 +35,17 @@ class PARTICLE(object):
         init_posx = np.random.uniform(0.0, 1.0)*width
         self.posn = np.array([init_posx, height])
     
-    def init_vels(self):
+    def init_vels(self, idstrb='Uniform'):
         """
         Initialize the velocity in (x, -z) (half-down quadrant)
         """
-        theta = np.random.uniform(-np.pi/2.0, np.pi/2.0)
+        if idstrb == 'Normal':
+            mu, sigma = 0, 0.1 # mean and standard deviation
+            theta = np.random.normal(mu, sigma)
+        else:
+            theta = np.random.uniform(-np.pi/2.0, np.pi/2.0)
         self.uvec = np.array([math.sin(theta), -math.cos(theta)])
-    
+        
     def init_plot(self):
         """
         Plot the initialized positions and velocities
