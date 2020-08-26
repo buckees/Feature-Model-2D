@@ -15,8 +15,15 @@ class MESHGRID(object):
         self.height = height # domain height in z direction
         self.res_x = res_x # resolution in x direction
         self.res_z = res_z # resolution in z direction
+        self.res = np.array([self.res_x, self.res_z]) # array of resolution
+#        <--------------------- width --------------------->
+#        0.0 ---- 1.0 ---- 2.0 ---- ... ---- 99.0 ---- 100.0
+#        --- cell --- cell --- cell ... cell ---- cell -----
+#        -- center - center - center . center -- center ----
+#        --- 0.5 ---- 1.5 ---- 2.5  ... 98.5 ---- 99.5 -----
+#        --(0, nj)--(1, nj)--(2, nj)...(98, nj)--(99, nj)---
         self.nx = math.ceil(width/res_x) # num of cells in x 
-        self.nz = math.ceil(height/res_z) # num of cells iin z
+        self.nz = math.ceil(height/res_z) # num of cels iin z
         self.mat = np.zeros((self.nx, self.nz)) # mesh materials
         self.surf = np.array([]) # surface node
     
@@ -93,6 +100,31 @@ class MESHGRID(object):
         axes[1].set_xlim(0, self.width)
         axes[1].set_ylim(0, self.height)
         plt.show(fig)
+
+    def hit_check(self, posn):
+        """
+        all posn needs to be rounded to 0.5*nx (cell center)
+        posn needs to be shifted by half res_x
+        """
+        idx = np.rint((posn-self.res_x*0.5)/self.res).astype(int)
+        idx = tuple(idx)
+        return self.mat[idx], idx
+
+    def update_surf(self, idx, threshold):
+        """
+        update surface due to etching
+        threshold: etching probability
+        mat == 2 equivalent to mat == 'Si'
+        """
+        if self.mat[idx] == 2:
+                rnd = np.random.uniform(0.0, 1.0)
+                if rnd < threshold:
+                    self.mat[idx] = 0
+    
+    def surf_norm(self, idx):
+        vec_norm = (0.0, 1.0)
+        return vec_norm
+
 
 
 def rect_conv(coord, res_x, res_z):

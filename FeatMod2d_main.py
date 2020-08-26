@@ -8,23 +8,18 @@ import math
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
-from FeatMod2d_ops import width, height, res_x, res_z, num_ptcl
+from FeatMod2d_ops import width, height, res_x, res_z, num_ptcl, threshold
 from FeatMod2d_mesh import MESHGRID
 from FeatMod2d_ptcl import PARTICLE
 from FeatMod2d_move import find_intersect_node
 from FeatMod2d_plot import plot_mesh, plot_itsct
 
-def hit_check(posn, mesh):
-    int_x, int_z = np.divide(Arp.posn, 
-                             np.array([res_x, res_z])).astype(int)
-    return mesh.mat[int_x, int_z], (int_x, int_z)
-
-threshold = 0.1
-def update_surf(idx, mesh):
-    if mesh.mat[idx] == 2:
-            rnd = np.random.uniform(0.0, 1.0)
-            if rnd < threshold:
-                mesh.mat[idx] = 0
+#threshold = 0.1
+#def update_surf(idx, mesh):
+#    if mesh.mat[idx] == 2:
+#            rnd = np.random.uniform(0.0, 1.0)
+#            if rnd < threshold:
+#                mesh.mat[idx] = 0
 
 
 # create mesh
@@ -48,10 +43,24 @@ for k in range(num_ptcl):
         Arp.move_ptcl(delta_L)
         Arp.posn[0] = Arp.posn[0] % mesh.width
         record[k].append(Arp.posn.copy())
-        hit_mat, hit_idx = hit_check(Arp.posn, mesh)
+        hit_mat, hit_idx = mesh.hit_check(Arp.posn)
         if hit_mat:
             break
-    update_surf(hit_idx, mesh)
+    rnd = np.random.uniform(0.0, 1.0)
+    if rnd < 0.5:
+#        reflection
+        vec_vel = Arp.vels
+        vec_vel = -vec_vel
+        vec_vel = rotate_random(vec_vel)
+        for i in range(1000):
+            Arp.move_ptcl(delta_L)
+            Arp.posn[0] = Arp.posn[0] % mesh.width
+            record[k].append(Arp.posn.copy())
+            hit_mat, hit_idx = mesh.hit_check(Arp.posn)
+            if hit_mat:
+                break
+    else:
+        mesh.update_surf(hit_idx, threshold)
     record[k] = np.array(record[k]).T
 
 #print(record[-1])
