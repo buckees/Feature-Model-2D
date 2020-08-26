@@ -34,55 +34,50 @@ delta_L = min(res_x, res_z)
 Arp = PARTICLE('Ar+', 'Ion',  32.0,     1)
 
 for k in range(num_ptcl):
+    Arp.dead = 0
     Arp.init_posn(width, height)
     Arp.init_vels('Normal')
 #    Arp.init_plot()
     record[k].append(Arp.posn.copy())
 
-    imove_ptcl, ireaction, iremove = 1, 0, 0
     num_reflect = 0
-    while imove_ptcl == 1 and num_reflect < 5:
-        for i in range(1000):
-            Arp.move_ptcl(delta_L)
-            Arp.posn[0] = Arp.posn[0] % mesh.width
-            record[k].append(Arp.posn.copy())
-            if Arp.posn[1] >= mesh.height:
-                iremove = 1
-                imove_ptcl = 0
-                break
-            
-            hit_mat, hit_idx = mesh.hit_check(Arp.posn)
-            if hit_mat:
-                break
-            
-        if iremove == 1:
+#    while imove_ptcl == 1 and num_reflect < 5:
+    for i in range(3000):
+        # advance the ptcl by delta_L
+        Arp.move_ptcl(delta_L)
+        # periodic b.c. at left and right bdry
+        Arp.bdry_check(mesh.width, mesh.height, 'lost')
+        # record ptcl trajectory
+        record[k].append(Arp.posn.copy())
+        if Arp.dead:
             break
-        
-        if not hit_mat:
-            num_reflect += 1
-            continue
-        # at this position, th ptcl hits a mat
-        # decide wehter a reflection or reaction
-        
-        rnd = np.random.uniform(0.0, 1.0)
-        mat_name = mesh.mater[hit_mat]
-        rflct = REFLECT(Arp.name, mat_name, 1.0)
-        prob = rflct.calc_prob()
-        if rnd < prob:
-    #        call reflection
-            u1 = Arp.uvec
-            Arp.uvec = rotate_random(Arp.uvec)
-            num_reflect += 1
-            u2 = Arp.uvec
-#            angle = np.arccos(np.clip(np.dot(-u1, u2), -1, 1))
-#            angle = angle/math.pi*180.0
-#            print(angle)
-        else:
-            imove_ptcl = 0
-            ireaction = 1
-            
-    if ireaction == 1:
-        mesh.update_surf(hit_idx, threshold)
+        hit_mat, hit_idx = mesh.hit_check(Arp.posn)
+        if hit_mat:
+            # at this position, th ptcl hits a mat
+            # decide wehter a reflection or reaction        
+            rnd = np.random.uniform(0.0, 1.0)
+            mat_name = mesh.mater[hit_mat]
+            rflct = REFLECT(Arp.name, mat_name, 1.0)
+            prob = rflct.calc_prob()
+            if rnd < prob:
+                if num_reflect > 3:
+                    Arp.dead = 1
+                    break
+        #        call reflection
+                u1 = Arp.uvec
+                Arp.uvec = rotate_random(Arp.uvec)
+                num_reflect += 1
+                u2 = Arp.uvec
+    #            angle = np.arccos(np.clip(np.dot(-u1, u2), -1, 1))
+    #            angle = angle/math.pi*180.0
+    #            print(angle)
+            else:                
+                # now ireact = 1
+                mesh.update_surf(hit_idx, threshold)
+                Arp.dead = 1
+        # check if the ptcl is dead
+        if Arp.dead:
+            break
     
     record[k] = np.array(record[k]).T
 

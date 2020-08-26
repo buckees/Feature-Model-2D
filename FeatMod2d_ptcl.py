@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 class PARTICLE(object):
     """Stores all species"""
-    def __init__(self, name, ptype, mass, charge):
+    def __init__(self, name, ptype, mass, charge, dead=0):
         self.name = name # str
         self.ptype = ptype # str, 'E','Ion','Neut' or 'Bkg'
         self.mass = mass # unit in AMU
@@ -18,6 +18,7 @@ class PARTICLE(object):
         self.vels = np.zeros(2)
         self.uvec = np.zeros(2)
         self.accl = np.zeros(2)
+        self.dead = dead # indicator for ptcl alive or dead
     
     def __str__(self):
         return """
@@ -63,6 +64,23 @@ class PARTICLE(object):
         Move each partile in a length of delta_L along its v-vector
         """
         self.posn += self.uvec*delta_L
+
+    def bdry_check(self, width, height, mode='lost'):
+        """
+        check the b.c. for moving ptcl
+        make the ptcl dead if it gets beyond the top bdry
+        three modes for vertical bdry are available: 
+            lost, periodic and reflective
+        left bdry is alway at 0.0
+        """
+        if self.posn[1] > height:
+            self.dead = 1            
+        elif mode == 'lost':
+            self.dead = 1
+        elif mode == 'periodic':
+            self.posn[0] = self.posn[0] % width
+        elif mode == 'reflective':
+            pass
 
 if __name__ == '__main__':
     from FeatMod2d_ops import width, height, res_x, res_z
