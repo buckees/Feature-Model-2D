@@ -5,7 +5,6 @@ Partile file
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 
 
 class PARTICLE(object):

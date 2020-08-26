@@ -24,8 +24,9 @@ class MESHGRID(object):
 #        --(0, nj)--(1, nj)--(2, nj)...(98, nj)--(99, nj)---
         self.nx = math.ceil(width/res_x) # num of cells in x 
         self.nz = math.ceil(height/res_z) # num of cels iin z
-        self.mat = np.zeros((self.nx, self.nz)) # mesh materials
+        self.mat = np.zeros((self.nx, self.nz)).astype(int) # mesh materials
         self.surf = np.array([]) # surface node
+        self.mater = [] # materials name <--> materails No.
     
     def __str__(self):
         return """
@@ -39,6 +40,7 @@ class MESHGRID(object):
     
     # assign input materials to the mesh
     def mat_input(self):
+        self.mater = ['Vac','SiO2', 'Si', 'PR']
         materials = []
         m = [('SiO2', 1), 'rect', (0.0, 0.0, 100.0, 50.0)]
         materials.append(m)
@@ -57,7 +59,7 @@ class MESHGRID(object):
                 coord = material[2]
                 ncoord = rect_conv(coord, self.res_x, self.res_z)
                 self.mat[ncoord[0]:ncoord[1], 
-                         ncoord[2]:ncoord[3]] = mater[1]
+                         ncoord[2]:ncoord[3]] = int(mater[1])
     
     def find_surface(self):
         surf = []
