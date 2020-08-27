@@ -9,7 +9,7 @@ width, height = 100.0, 500.0 # nm
 res_x, res_z = 2.0, 2.0 # nm
 
 # particle information
-num_ptcl = 50000
+num_ptcl = 10000
 
 # reaction informaiton
-threshold = 0.1
+threshold = 0.5

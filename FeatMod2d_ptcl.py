@@ -76,7 +76,8 @@ class PARTICLE(object):
         if self.posn[1] > height:
             self.dead = 1            
         elif mode == 'lost':
-            self.dead = 1
+            if not (0.0 < self.posn[0] < width):
+                self.dead = 1
         elif mode == 'periodic':
             self.posn[0] = self.posn[0] % width
         elif mode == 'reflective':

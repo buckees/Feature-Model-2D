@@ -63,7 +63,7 @@ for k in range(num_ptcl):
                 if num_reflect > 3:
                     Arp.dead = 1
                     break
-        #        call reflection
+                #call reflection
                 u1 = Arp.uvec
                 Arp.uvec = rotate_random(Arp.uvec)
                 num_reflect += 1
@@ -94,4 +94,5 @@ ax.contourf(X, Z, mesh.mat.T, cmap = colMap, vmin = 0.2, extend='both')
 for i in range(10):
     ax.plot(record[num_ptcl-i-1][0,:], record[num_ptcl-i-1][1,:], 
             marker = 'o', markersize=1, linestyle='None' )
+fig.save('etching_demo.png')
 plt.show(fig)
