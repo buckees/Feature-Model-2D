@@ -3,6 +3,9 @@
 Feature Model 2D
 Reflection
 """
+import numpy as np
+from math import pi, sin, cos
+
 
 class REFLECT(object):
     """Reflection Probability"""
@@ -18,4 +21,10 @@ class REFLECT(object):
             self.prob = 0.1
         return self.prob
         
-    
+    def rotate_random(self, uvec):
+        theta = np.random.uniform(-pi/4.0, + pi/4.0)
+        theta = theta + pi
+        x1, z1 = uvec
+        x2 = cos(theta)*x1 - sin(theta)*z1
+        z2 = sin(theta)*x1 + cos(theta)*z1
+        return np.array([x2, z2])

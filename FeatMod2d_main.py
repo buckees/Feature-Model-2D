@@ -13,14 +13,6 @@ from FeatMod2d_mesh import MESHGRID
 from FeatMod2d_ptcl import PARTICLE
 from FeatMod2d_rflct import REFLECT
 
-def rotate_random(uvec):
-    theta = np.random.uniform(-math.pi/4.0, +math.pi/4.0)
-    theta = theta + math.pi
-    x1, z1 = uvec
-    x2 = math.cos(theta)*x1 - math.sin(theta)*z1
-    z2 = math.sin(theta)*x1 + math.cos(theta)*z1
-    return np.array([x2, z2])
-
 # create mesh
 mesh = MESHGRID(width, height, res_x, res_z)
 print(mesh)
@@ -32,6 +24,8 @@ record = [[] for i in range(num_ptcl)]
 
 delta_L = min(res_x, res_z)
 Arp = PARTICLE('Ar+', 'Ion',  32.0,     1)
+
+Arp_rflct = REFLECT()
 
 for k in range(num_ptcl):
     Arp.dead = 0
@@ -65,7 +59,7 @@ for k in range(num_ptcl):
                     break
                 #call reflection
                 u1 = Arp.uvec
-                Arp.uvec = rotate_random(Arp.uvec)
+                Arp.uvec = Arp_rflct.rotate_random(Arp.uvec)
                 num_reflect += 1
                 u2 = Arp.uvec
     #            angle = np.arccos(np.clip(np.dot(-u1, u2), -1, 1))
