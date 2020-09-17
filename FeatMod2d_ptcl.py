@@ -15,7 +15,7 @@ class PARTICLE(object):
         self.mass = mass # unit in AMU
         self.charge = charge # unit in Unit Charge of Electron
         self.posn = np.zeros(2)
-        self.vels = np.zeros(2)
+        self.enrg = 0.025 # unit in eV, initial as room temperature
         self.uvec = np.zeros(2)
         self.accl = np.zeros(2)
         self.dead = dead # indicator for ptcl alive or dead
@@ -35,7 +35,7 @@ class PARTICLE(object):
         init_posx = np.random.uniform(0.0, 1.0)*width
         self.posn = np.array([init_posx, height])
     
-    def init_vels(self, idstrb='Uniform'):
+    def init_uvec(self, idstrb='Uniform'):
         """
         Initialize the velocity in (x, -z) (half-down quadrant)
         """
@@ -88,7 +88,7 @@ if __name__ == '__main__':
     Arp = PARTICLE('Ar+', 'Ion',  32.0,     1)
     print(Arp)
     Arp.init_posn(width, height)
-    Arp.init_vels()
+    Arp.init_uvec()
     Arp.init_plot()
     
     delta_L = min(res_x, res_z)

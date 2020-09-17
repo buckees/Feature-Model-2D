@@ -36,7 +36,7 @@ Arp = PARTICLE('Ar+', 'Ion',  32.0,     1)
 for k in range(num_ptcl):
     Arp.dead = 0
     Arp.init_posn(width, height)
-    Arp.init_vels('Normal')
+    Arp.init_uvec('Normal')
 #    Arp.init_plot()
     record[k].append(Arp.posn.copy())
 
