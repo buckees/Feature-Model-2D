@@ -81,7 +81,7 @@ class PARTICLE(object):
         """
         self.posn += self.uvec*delta_L
 
-    def bdry_check(self, width, height, mode='lost'):
+    def bdry_check(self, width, height, imode='lost'):
         """
         check the b.c. for moving ptcl
         make the ptcl dead if it gets beyond the top bdry
@@ -91,12 +91,12 @@ class PARTICLE(object):
         """
         if self.posn[1] > height:
             self.dead = 1            
-        elif mode == 'lost':
+        elif imode == 'lost':
             if not (0.0 < self.posn[0] < width):
                 self.dead = 1
-        elif mode == 'periodic':
+        elif imode == 'periodic':
             self.posn[0] = self.posn[0] % width
-        elif mode == 'reflective':
+        elif imode == 'reflective':
             pass
 
 if __name__ == '__main__':
