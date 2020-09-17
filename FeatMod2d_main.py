@@ -4,11 +4,11 @@ Main program
 """
 
 import numpy as np
-import math
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
-from FeatMod2d_ops import width, height, res_x, res_z, num_ptcl, threshold
+from FeatMod2d_ops import width, height, res_x, res_z, num_ptcl, \
+                          threshold, max_rflct
 from FeatMod2d_mesh import MESHGRID
 from FeatMod2d_ptcl import PARTICLE
 from FeatMod2d_rflct import REFLECT
@@ -34,8 +34,8 @@ for k in range(num_ptcl):
 #    Arp.init_plot()
     record[k].append(Arp.posn.copy())
 
-    num_reflect = 0
-#    while imove_ptcl == 1 and num_reflect < 5:
+    num_rflct = 0
+#    while imove_ptcl == 1 and num_rflct < 5:
     for i in range(3000):
         # advance the ptcl by delta_L
         Arp.move_ptcl(delta_L)
@@ -54,13 +54,13 @@ for k in range(num_ptcl):
             rflct = REFLECT(Arp.name, mat_name, 1.0)
             prob = rflct.calc_prob()
             if rnd < prob:
-                if num_reflect > 3:
+                if num_rflct > max_rflct:
                     Arp.dead = 1
                     break
                 #call reflection
                 u1 = Arp.uvec
                 Arp.uvec = Arp_rflct.rotate_random(Arp.uvec)
-                num_reflect += 1
+                num_rflct += 1
                 u2 = Arp.uvec
     #            angle = np.arccos(np.clip(np.dot(-u1, u2), -1, 1))
     #            angle = angle/math.pi*180.0

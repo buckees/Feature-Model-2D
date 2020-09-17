@@ -11,5 +11,9 @@ res_x, res_z = 2.0, 2.0 # nm
 # particle information
 num_ptcl = 10000
 
+# reflection information
+max_rflct = 5
+
 # reaction informaiton
 threshold = 0.5
+
