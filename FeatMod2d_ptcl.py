@@ -37,14 +37,30 @@ class PARTICLE(object):
     
     def init_uvec(self, idstrb='Uniform'):
         """
-        Initialize the velocity in (x, -z) (half-down quadrant)
+        Initialize the velocity direction in (x, -z) 
+        (half-down quadrant)
         """
-        if idstrb == 'Normal':
+        if idstrb == 'Uniform':
+            theta = np.random.uniform(-np.pi/2.0, np.pi/2.0)
+        elif idstrb == 'Normal':
             mu, sigma = 0, 0.1 # mean and standard deviation
             theta = np.random.normal(mu, sigma)
-        else:
-            theta = np.random.uniform(-np.pi/2.0, np.pi/2.0)
+        
         self.uvec = np.array([math.sin(theta), -math.cos(theta)])
+    
+    def init_enrg(self, idstrb='Uniform', 
+                  enrg_min=1e-2, enrg_max=1e4):
+        """
+        Initialize the particle energy
+        """
+        if idstrb == 'Uniform':
+            enrg = np.random.uniform(enrg_min, enrg_max)
+
+        elif idstrb == 'Normal':
+            mu, sigma = 0, 0.1 # mean and standard deviation
+            pass
+        
+        self.enrg = enrg
         
     def init_plot(self):
         """
@@ -89,6 +105,7 @@ if __name__ == '__main__':
     print(Arp)
     Arp.init_posn(width, height)
     Arp.init_uvec()
+    Arp.init_enrg(); print("initial energy = %.2f eV" % Arp.enrg)
     Arp.init_plot()
     
     delta_L = min(res_x, res_z)
