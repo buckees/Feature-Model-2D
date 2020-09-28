@@ -5,6 +5,7 @@ Partile file
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+from scipy.stats import cosine
 
 
 class PARTICLE(object):
@@ -45,6 +46,8 @@ class PARTICLE(object):
         elif idstrb == 'Normal':
             mu, sigma = 0, 0.1 # mean and standard deviation
             theta = np.random.normal(mu, sigma)
+        elif idstrb == 'Cosine':
+            theta = cosine.rvs(scale=np.pi/2.0, size=1)
         
         self.uvec = np.array([math.sin(theta), -math.cos(theta)])
     
@@ -55,8 +58,11 @@ class PARTICLE(object):
         """
         if idstrb == 'Uniform':
             enrg = np.random.uniform(enrg_min, enrg_max)
-
+        
         elif idstrb == 'Normal':
+            pass
+
+        elif idstrb == 'Cosine':
             mu, sigma = 0, 0.1 # mean and standard deviation
             pass
         
