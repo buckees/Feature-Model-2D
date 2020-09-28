@@ -24,7 +24,11 @@ class MESHGRID(object):
 #        --(0, nj)--(1, nj)--(2, nj)...(98, nj)--(99, nj)---
         self.nx = math.ceil(width/res_x) # num of cells in x 
         self.nz = math.ceil(height/res_z) # num of cels iin z
-        self.mat = np.zeros((self.nx, self.nz)).astype(int) # mesh materials
+        # init x and z coordinates
+        tempx = np.linspace(0.0, self.width, self.nx) 
+        tempz = np.linspace(0.0, self.height, self.nz) 
+        self.x, self.z = np.meshgrid(tempx, tempz)
+        self.mat = np.zeros_like(self.x).astype(int) # mesh materials
         self.surf = np.array([]) # surface node
         self.mater = [] # materials name <--> materails No.
     
