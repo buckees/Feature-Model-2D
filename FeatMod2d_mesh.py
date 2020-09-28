@@ -28,7 +28,9 @@ class MESHGRID(object):
         tempx = np.linspace(0.0, self.width, self.nx) 
         tempz = np.linspace(0.0, self.height, self.nz) 
         self.x, self.z = np.meshgrid(tempx, tempz)
-        self.mat = np.zeros_like(self.x).astype(int) # mesh materials
+        # mesh materials is assigned to self.mat matrix
+        # note that the shape of self.mat is (nz, nx)
+        self.mat = np.zeros_like(self.x).astype(int)
         self.surf = np.array([]) # surface node
         self.mater = [] # materials name <--> materails No.
     
@@ -62,30 +64,30 @@ class MESHGRID(object):
             if itype == 'rect':
                 coord = material[2]
                 ncoord = rect_conv(coord, self.res_x, self.res_z)
-                self.mat[ncoord[0]:ncoord[1], 
-                         ncoord[2]:ncoord[3]] = int(mater[1])
+                self.mat[ncoord[2]:ncoord[3], 
+                         ncoord[0]:ncoord[1]] = int(mater[1])
     
     def find_surface(self):
         surf = []
         # search surface within materials
-        for i in range(self.nx):
-            for j in range(1, self.nz-1):
+        for j in range(1, self.nz-1):
+            for i in range(self.nx):
                 # if mat[i,j] is not 0
-                if self.mat[i,j]:
+                if self.mat[j,i]:
                     # temp = multiply all neighbours
                     # temp = 0 means one of neighbours = 0
-                    temp = self.mat[(i-1) % self.nx, j] \
-                          *self.mat[(i+1) % self.nx, j] \
-                          *self.mat[i, (j-1)% self.nz] \
-                          *self.mat[i, (j+1) % self.nz]
+                    temp = self.mat[j, (i-1) % self.nx] \
+                          *self.mat[j, (i+1) % self.nx] \
+                          *self.mat[(j-1) % self.nz, i] \
+                          *self.mat[(j+1) % self.nz, i]
                     if not temp:
-                        surf.append((i,j))
+                        surf.append((j,i))
         
         # search for left and right boundaries
-        for i in [0, self.nx-1]:
-            for j in range(1, self.nz-1):
-                if not self.mat[i,j]:
-                    surf.append((i,j))
+        for j in range(1, self.nz-1):
+            for i in [0, self.nx-1]:            
+                if not self.mat[j,i]:
+                    surf.append((j,i))
         
         self.surf = np.array(surf).T
     
@@ -93,13 +95,9 @@ class MESHGRID(object):
         colMap = cm.Accent
         colMap.set_under(color='white')
         
-        x = np.linspace(0.0, self.width, self.nx) 
-        z = np.linspace(0.0, self.height, self.nz) 
-        X, Z = np.meshgrid(x, z) 
-
         fig, axes = plt.subplots(1,2, figsize=(4,8),
                                    constrained_layout=True)
-        axes[0].contourf(X, Z, self.mat.T, 
+        axes[0].contourf(self.x, self.z, self.mat, 
             cmap = colMap, vmin = 0.2, extend='both')
         axes[1].plot(self.surf[0, :]*self.res_x, self.surf[1, :]*self.res_z, 
             'o', )
@@ -132,7 +130,7 @@ class MESHGRID(object):
         return vec_norm
 
 
-
+# convert rectangular coordinates to index
 def rect_conv(coord, res_x, res_z):
     ncoord = [math.ceil(coord[0]/res_x), math.ceil(coord[1]/res_z), 
               math.ceil(coord[2]/res_x), math.ceil(coord[3]/res_z)]
