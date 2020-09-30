@@ -84,10 +84,10 @@ class MESHGRID(object):
                         surf.append((j,i))
         
         # search for left and right boundaries
-        for j in range(1, self.nz-1):
-            for i in [0, self.nx-1]:            
-                if not self.mat[j,i]:
-                    surf.append((j,i))
+#        for j in range(1, self.nz-1):
+#            for i in [0, self.nx-1]:            
+#                if not self.mat[j,i]:
+#                    surf.append((j,i))
         
         self.surf = np.array(surf).T
     
@@ -99,7 +99,8 @@ class MESHGRID(object):
                                    constrained_layout=True)
         axes[0].contourf(self.x, self.z, self.mat, 
             cmap = colMap, vmin = 0.2, extend='both')
-        axes[1].plot(self.surf[0, :]*self.res_x, self.surf[1, :]*self.res_z, 
+        axes[1].plot(self.surf[1, :]*self.res_x, 
+            self.surf[0, :]*self.res_z, 
             'o', )
         axes[1].set_xlim(0, self.width)
         axes[1].set_ylim(0, self.height)
