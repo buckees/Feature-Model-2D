@@ -1,7 +1,4 @@
-"""
-Feature Model 2D
-Main program
-"""
+"""Feature Model 2D. Main program."""
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -40,7 +37,7 @@ for k in range(num_ptcl):
         # advance the ptcl by delta_L
         Arp.move_ptcl(delta_L)
         # periodic b.c. at left and right bdry
-        Arp.bdry_check(mesh.width, mesh.height, 'lost')
+        Arp.bdry_check(mesh.width, mesh.height, 'periodic')
         # record ptcl trajectory
         record[k].append(Arp.posn.copy())
         if Arp.dead:
@@ -48,7 +45,7 @@ for k in range(num_ptcl):
         hit_mat, hit_idx = mesh.hit_check(Arp.posn)
         if hit_mat:
             # at this position, th ptcl hits a mat
-            # decide wehter a reflection or reaction        
+            # decide wehter a reflection or reaction
             rnd = np.random.uniform(0.0, 1.0)
             mat_name = mesh.mater[hit_mat]
             rflct = REFLECT(Arp.name, mat_name, 1.0)
@@ -57,7 +54,7 @@ for k in range(num_ptcl):
                 if num_rflct > max_rflct:
                     Arp.dead = 1
                     break
-                #call reflection
+                # call reflection
                 u1 = Arp.uvec
                 Arp.uvec = Arp_rflct.rotate_random(Arp.uvec)
                 num_rflct += 1
@@ -65,28 +62,27 @@ for k in range(num_ptcl):
     #            angle = np.arccos(np.clip(np.dot(-u1, u2), -1, 1))
     #            angle = angle/math.pi*180.0
     #            print(angle)
-            else:                
+            else:
                 # now ireact = 1
                 mesh.update_surf(hit_idx, threshold)
                 Arp.dead = 1
         # check if the ptcl is dead
         if Arp.dead:
             break
-    
+
     record[k] = np.array(record[k]).T
 
-#print(record[-1])
 
-fig, ax = plt.subplots(1,1, figsize=(2,8),
-                           constrained_layout=True)
+fig, ax = plt.subplots(1, 1, figsize=(2, 8),
+                       constrained_layout=True)
 colMap = cm.Accent
 colMap.set_under(color='white')
-x = np.linspace(0.0, mesh.width, mesh.nx) 
-z = np.linspace(0.0, mesh.height, mesh.nz) 
-X, Z = np.meshgrid(x, z) 
-ax.contourf(X, Z, mesh.mat.T, cmap = colMap, vmin = 0.2, extend='both')
+x = np.linspace(0.0, mesh.width, mesh.nx)
+z = np.linspace(0.0, mesh.height, mesh.nz)
+X, Z = np.meshgrid(x, z)
+ax.contourf(X, Z, mesh.mat, cmap=colMap, vmin=0.2, extend='both')
 for i in range(10):
-    ax.plot(record[num_ptcl-i-1][0,:], record[num_ptcl-i-1][1,:], 
-            marker = 'o', markersize=1, linestyle='None' )
+    ax.plot(record[num_ptcl-i-1][0, :], record[num_ptcl-i-1][1, :],
+            marker='o', markersize=1, linestyle='None')
 plt.show(fig)
 fig.savefig('etching_demo.png')
