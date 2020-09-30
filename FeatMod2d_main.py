@@ -3,6 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import copy
 
 from FeatMod2d_ops import width, height, res_x, res_z, num_ptcl, \
                           threshold, max_rflct
@@ -75,7 +76,7 @@ for k in range(num_ptcl):
 
 fig, ax = plt.subplots(1, 1, figsize=(2, 8),
                        constrained_layout=True)
-colMap = cm.Accent
+colMap = copy.copy(cm.Accent)
 colMap.set_under(color='white')
 x = np.linspace(0.0, mesh.width, mesh.nx)
 z = np.linspace(0.0, mesh.height, mesh.nz)
