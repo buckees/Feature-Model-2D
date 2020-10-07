@@ -1,7 +1,6 @@
 """Feature Model 2D. Mesh file."""
 
 import numpy as np
-import math
 import copy
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -24,8 +23,8 @@ class MESHGRID(object):
 #        -- center - center - center . center -- center ----
 #        --- 0.5 ---- 1.5 ---- 2.5  ... 98.5 ---- 99.5 -----
 #        --(0, nj)--(1, nj)--(2, nj)...(98, nj)--(99, nj)---
-        self.nx = math.ceil(width/res_x)  # num of cells in x
-        self.nz = math.ceil(height/res_z)  # num of cels iin z
+        self.nx = int(np.ceil(width/res_x))  # num of cells in x
+        self.nz = int(np.ceil(height/res_z))  # num of cels iin z
         # init x and z coordinates
         tempx = np.linspace(0.0, self.width, self.nx)
         tempz = np.linspace(0.0, self.height, self.nz)
@@ -175,8 +174,9 @@ class MESHGRID(object):
 
 def rect_conv(coord, res_x, res_z):
     """Convert rectangular coordinates to index."""
-    ncoord = [math.ceil(coord[0]/res_x), math.ceil(coord[1]/res_z),
-              math.ceil(coord[2]/res_x), math.ceil(coord[3]/res_z)]
+    ncoord = [np.ceil(coord[0]/res_x), np.ceil(coord[1]/res_z),
+              np.ceil(coord[2]/res_x), np.ceil(coord[3]/res_z)]
+    ncoord = [int(temp) for temp in ncoord]
     return [ncoord[0], ncoord[0]+ncoord[2], ncoord[1], ncoord[1]+ncoord[3]]
 
 
