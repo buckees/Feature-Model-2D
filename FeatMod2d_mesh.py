@@ -88,6 +88,7 @@ class MESHGRID(object):
                          * self.mat[(j+1) % self.nz, i]
                     if not temp:
                         surf.append((j, i))
+                        self.mat_surf[j, i] = 1
 
         # search for left and right boundaries
 #        for j in range(1, self.nz-1):
@@ -104,13 +105,17 @@ class MESHGRID(object):
 
         fig, axes = plt.subplots(1, 2, figsize=(4, 8),
                                  constrained_layout=True)
-        axes[0].contourf(self.x, self.z, self.mat,
-                         cmap=colMap, vmin=0.2, extend='both')
-        axes[1].plot(self.surf[1, :]*self.res_x,
-                     self.surf[0, :]*self.res_z,
-                     'o', )
-        axes[1].set_xlim(0, self.width)
-        axes[1].set_ylim(0, self.height)
+        ax = axes[0]
+        ax.contourf(self.x, self.z, self.mat,
+                    cmap=colMap, vmin=0.2, extend='both')
+        ax = axes[1]
+        ax.contourf(self.x, self.z, self.mat_surf,
+                    cmap=colMap, vmin=0.2, extend='both')
+        # axes[1].plot(self.surf[1, :]*self.res_x,
+        #              self.surf[0, :]*self.res_z,
+        #              'o', )
+        # axes[1].set_xlim(0, self.width)
+        # axes[1].set_ylim(0, self.height)
         plt.show(fig)
 
     def hit_check(self, posn):
