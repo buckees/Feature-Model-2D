@@ -65,7 +65,7 @@ for k in range(num_ptcl):
     #            print(angle)
             else:
                 # now ireact = 1
-                mesh.update_surf(hit_idx, threshold)
+                mesh.update_mat(hit_idx, threshold)
                 Arp.dead = 1
         # check if the ptcl is dead
         if Arp.dead:

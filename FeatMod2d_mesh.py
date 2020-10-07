@@ -124,9 +124,9 @@ class MESHGRID(object):
         idx = tuple(idx)
         return self.mat[idx], idx
 
-    def update_surf(self, idx, threshold):
+    def update_mat(self, idx, threshold):
         """
-        Update surface due to etching.
+        Update materials due to etching.
 
         threshold: etching probability
         mat == 2 equivalent to mat == 'Si'
