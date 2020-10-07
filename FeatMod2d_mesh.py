@@ -5,6 +5,7 @@ import math
 import copy
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+from scipy.optimize import minimize, least_squares
 
 
 class MESHGRID(object):
@@ -146,15 +147,30 @@ class MESHGRID(object):
 
     def surf_norm(self, idx, radius=2):
         """Caculate surface normal."""
-        temp_mat = self.mat_surf[idx[0]-radius:idx[0]+radius+1,
-                                 idx[1]-radius:idx[1]+radius+1]
+        temp_mat_surf = self.mat_surf[idx[0]-radius:idx[0]+radius+1,
+                                      idx[1]-radius:idx[1]+radius+1]
         temp_x = self.x[idx[0]-radius:idx[0]+radius+1,
                         idx[1]-radius:idx[1]+radius+1]
         temp_z = self.z[idx[0]-radius:idx[0]+radius+1,
                         idx[1]-radius:idx[1]+radius+1]
-        print(temp_mat, '\n', temp_x, '\n', temp_z)
+        print(temp_mat_surf, '\n', temp_x, '\n', temp_z)
+
+        def cost_func_surf_norm(theta):
+            """Construct the cost func for surface fitting."""
+            A, B = -np.sin(theta), np.cos(theta)
+            C = A*self.x[idx] + B*self.z[idx]
+            Q = A*temp_x + B*temp_z - C
+            Q = np.multiply(Q, temp_mat_surf)
+            Q2 = np.power(Q, 2)
+            Qsum = Q2.sum()
+            return Qsum
+
+        min_norm = minimize(cost_func_surf_norm, np.pi/4)
+        print(min_norm)
         vec_norm = (0.0, 1.0)
         return vec_norm
+
+
 
 
 def rect_conv(coord, res_x, res_z):
