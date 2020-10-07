@@ -144,9 +144,15 @@ class MESHGRID(object):
             if rnd < threshold:
                 self.mat[idx] = 0
 
-    def surf_norm(self, idx, radius=3):
+    def surf_norm(self, idx, radius=2):
         """Caculate surface normal."""
-        temp_mat = self.surf
+        temp_mat = self.mat_surf[idx[0]-radius:idx[0]+radius+1,
+                                 idx[1]-radius:idx[1]+radius+1]
+        temp_x = self.x[idx[0]-radius:idx[0]+radius+1,
+                        idx[1]-radius:idx[1]+radius+1]
+        temp_z = self.z[idx[0]-radius:idx[0]+radius+1,
+                        idx[1]-radius:idx[1]+radius+1]
+        print(temp_mat, '\n', temp_x, '\n', temp_z)
         vec_norm = (0.0, 1.0)
         return vec_norm
 
@@ -164,3 +170,5 @@ if __name__ == '__main__':
     mesh.mat_input()
     mesh.find_surf()
     mesh.plot()
+    temp_idx = mesh.surf[:, 70]
+    mesh.surf_norm([174, 25])
