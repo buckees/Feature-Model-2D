@@ -117,7 +117,7 @@ class MESHGRID(object):
         All posn needs to be rounded to 0.5*nx (cell center).
         posn needs to be shifted by half res_x.
         """
-        idx = np.rint((posn-self.res_x*0.5)/self.res).astype(int)
+        idx = np.rint((posn - self.res*0.5) / self.res).astype(int)
         # reverse idx in order to accomplish self.mat order
         idx = np.flipud(idx)
         # convert idx to index format
