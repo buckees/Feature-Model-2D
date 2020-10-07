@@ -69,7 +69,7 @@ class MESHGRID(object):
                 self.mat[ncoord[2]:ncoord[3],
                          ncoord[0]:ncoord[1]] = int(mater[1])
 
-    def find_surface(self):
+    def find_surf(self):
         """Search for the surface nodes."""
         surf = []
         # search surface within materials
@@ -136,8 +136,9 @@ class MESHGRID(object):
             if rnd < threshold:
                 self.mat[idx] = 0
 
-    def surf_norm(self, idx):
+    def surf_norm(self, idx, radius=3):
         """Caculate surface normal."""
+        temp_mat = self.surf
         vec_norm = (0.0, 1.0)
         return vec_norm
 
@@ -153,5 +154,5 @@ if __name__ == '__main__':
     from FeatMod2d_ops import width, height, res_x, res_z
     mesh = MESHGRID(width, height, res_x, res_z)
     mesh.mat_input()
-    mesh.find_surface()
+    mesh.find_surf()
     mesh.plot()

@@ -15,7 +15,7 @@ from FeatMod2d_rflct import REFLECT
 mesh = MESHGRID(width, height, res_x, res_z)
 print(mesh)
 mesh.mat_input()
-mesh.find_surface()
+mesh.find_surf()
 mesh.plot()
 
 record = [[] for i in range(num_ptcl)]
