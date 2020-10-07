@@ -32,6 +32,9 @@ class MESHGRID(object):
         # mesh materials is assigned to self.mat matrix
         # note that the shape of self.mat is (nz, nx)
         self.mat = np.zeros_like(self.x).astype(int)
+        # construct a mat-like matrix for surface
+        # mat_surf = 1 if a surface node; 0 if not.
+        self.mat_surf = np.zeros_like(self.mat).astype(int)
         self.surf = np.array([])  # surface node
         self.mater = []  # materials name <--> materails No.
 
