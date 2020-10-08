@@ -178,7 +178,7 @@ class MESHGRID(object):
                         idx[1]-radius:idx[1]+radius+1]
         temp_z = self.z[idx[0]-radius:idx[0]+radius+1,
                         idx[1]-radius:idx[1]+radius+1]
-        print(temp_mat_surf, '\n', temp_x, '\n', temp_z, '\n')
+        print('idx = ', idx, '\n', temp_mat_surf, '\n')
 
         def cost_func_surf_norm(theta):
             """Construct the cost func for surface fitting."""
@@ -191,7 +191,7 @@ class MESHGRID(object):
             return Qsum
 
         min_norm = minimize(cost_func_surf_norm, np.pi/4)
-        print(min_norm)
+        print(min_norm.success, '\n')
         theta = min_norm.x[0] + np.pi/2
         surf_norm = (np.cos(theta), np.sin(theta))
         temp_posn = np.array([self.x[idx], self.z[idx]])
