@@ -160,7 +160,18 @@ class MESHGRID(object):
                 self.mat[idx] = 0
 
     def calc_surf_norm(self, idx, radius=2):
-        """Caculate surface normal."""
+        """
+        Caculate surface normal.
+
+        Inputs: index where particle hit
+        Calc searching sub-domain
+        Calc cost function for surface fitting
+        Calc the minimun cost function
+        Calc the surface direction
+        Calc the surface normal direction, rotate 90 or 270 degrees
+        Calc surface normal vector
+        Output: surface normal vector and vector angle
+        """
         temp_mat_surf = self.mat_surf[idx[0]-radius:idx[0]+radius+1,
                                       idx[1]-radius:idx[1]+radius+1]
         temp_x = self.x[idx[0]-radius:idx[0]+radius+1,
@@ -191,7 +202,7 @@ class MESHGRID(object):
             theta += np.pi
             surf_norm = (np.cos(theta), np.sin(theta))
 
-        return surf_norm
+        return surf_norm, theta
 
 
 def rect_conv(coord, res_x, res_z):
@@ -208,9 +219,9 @@ if __name__ == '__main__':
     mesh.mat_input()
     mesh.find_surf()
     mesh.plot()
-    temp_idx = tuple(mesh.surf[:, 5])
+    temp_idx = tuple(mesh.surf[:, 1])
     print('idx=', temp_idx)
-    surf_norm = mesh.calc_surf_norm(temp_idx)
+    surf_norm, theta = mesh.calc_surf_norm(temp_idx)
     print(surf_norm)
     temp_posn = temp_idx*mesh.res
 
