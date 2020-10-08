@@ -61,6 +61,8 @@ class MESHGRID(object):
         materials.append(m)
         m = [('PR', 3),   'rect', (70.0, 350.0, 30.0, 100.0)]
         materials.append(m)
+        m = [('Plasma', 0),   'circ', (50.0, 350.0, 30.0)]
+        materials.append(m)
 
         for material in materials:
             mater = material[0]
@@ -71,6 +73,15 @@ class MESHGRID(object):
                 ncoord = rect_conv(coord, self.res_x, self.res_z)
                 self.mat[ncoord[2]:ncoord[3],
                          ncoord[0]:ncoord[1]] = int(mater[1])
+            if itype == 'circ':
+                circ_x, circ_z, circ_r = material[2]
+                for j in range(1, self.nz-1):
+                    for i in range(self.nx):
+                        tempx = self.x[j, i]
+                        tempz = self.z[j, i]
+                        tempd = (tempx - circ_x)**2 + (tempz - circ_z)**2
+                        if tempd < circ_r**2:
+                            self.mat[j, i] = int(mater[1])
 
     def find_surf(self):
         """Search for the surface nodes."""
@@ -85,7 +96,11 @@ class MESHGRID(object):
                     temp = self.mat[j, (i-1) % self.nx] \
                          * self.mat[j, (i+1) % self.nx] \
                          * self.mat[(j-1) % self.nz, i] \
-                         * self.mat[(j+1) % self.nz, i]
+                         * self.mat[(j+1) % self.nz, i] \
+                         * self.mat[(j-1) % self.nz, (i-1) % self.nx] \
+                         * self.mat[(j-1) % self.nz, (i+1) % self.nx] \
+                         * self.mat[(j+1) % self.nz, (i-1) % self.nx] \
+                         * self.mat[(j+1) % self.nz, (i+1) % self.nx]
                     if not temp:
                         surf.append((j, i))
                         self.mat_surf[j, i] = 1
@@ -169,7 +184,7 @@ class MESHGRID(object):
         theta = min_norm.x[0] + np.pi/2
         surf_norm = (np.cos(theta), np.sin(theta))
         temp_posn = np.array([self.x[idx], self.z[idx]])
-        temp_posn += self.res*surf_norm
+        temp_posn += np.sqrt(2)/2*radius*self.res*surf_norm
         # make sure the surf_norm points out of material
         temp_mat, temp_idx = self.hit_check(temp_posn)
         if temp_mat:
@@ -193,5 +208,23 @@ if __name__ == '__main__':
     mesh.mat_input()
     mesh.find_surf()
     mesh.plot()
-    surf_norm = mesh.calc_surf_norm((174, 25))
+    temp_idx = tuple(mesh.surf[:, 5])
+    print('idx=', temp_idx)
+    surf_norm = mesh.calc_surf_norm(temp_idx)
     print(surf_norm)
+    temp_posn = temp_idx*mesh.res
+
+    colMap = copy.copy(cm.get_cmap("Accent"))
+    colMap.set_under(color='white')
+
+    fig, axes = plt.subplots(1, 2, figsize=(4, 8),
+                             constrained_layout=True)
+    ax = axes[0]
+    ax.contourf(mesh.x, mesh.z, mesh.mat,
+                cmap=colMap, vmin=0.2, extend='both')
+    ax.quiver(temp_posn[1], temp_posn[0], surf_norm[0], surf_norm[1],
+              scale=5)
+    ax = axes[1]
+    ax.contourf(mesh.x, mesh.z, mesh.mat_surf,
+                cmap=colMap, vmin=0.2, extend='both')
+    plt.show(fig)
