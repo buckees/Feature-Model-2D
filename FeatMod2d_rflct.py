@@ -30,8 +30,9 @@ class REFLECT(object):
         z2 = np.sin(theta)*x1 + np.cos(theta)*z1
         return np.array([x2, z2])
 
-    def diff_rflct(self, theta):
+    def diff_rflct(self, surf_norm_theta):
         """Calc the diffusive refelection."""
-        self.theta  = cosine.rvs(size=1)
-        self.theta += theta
-        uvec = (np.cos(theta), np.sin(theta))
+        temp_theta = cosine.rvs(size=1)
+        temp_theta += surf_norm_theta
+        self.theta = temp_theta[0]
+        return np.array([np.cos(self.theta), np.sin(self.theta)])
