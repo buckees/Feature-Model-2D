@@ -144,7 +144,7 @@ class MESHGRID(object):
             if rnd < threshold:
                 self.mat[idx] = 0
 
-    def surf_norm(self, idx, radius=2):
+    def calc_surf_norm(self, idx, radius=2):
         """Caculate surface normal."""
         temp_mat_surf = self.mat_surf[idx[0]-radius:idx[0]+radius+1,
                                       idx[1]-radius:idx[1]+radius+1]
@@ -152,7 +152,7 @@ class MESHGRID(object):
                         idx[1]-radius:idx[1]+radius+1]
         temp_z = self.z[idx[0]-radius:idx[0]+radius+1,
                         idx[1]-radius:idx[1]+radius+1]
-        print(temp_mat_surf, '\n', temp_x, '\n', temp_z)
+        print(temp_mat_surf, '\n', temp_x, '\n', temp_z, '\n')
 
         def cost_func_surf_norm(theta):
             """Construct the cost func for surface fitting."""
@@ -166,10 +166,17 @@ class MESHGRID(object):
 
         min_norm = minimize(cost_func_surf_norm, np.pi/4)
         print(min_norm)
-        vec_norm = (0.0, 1.0)
-        return vec_norm
+        theta = min_norm.x[0] + np.pi/2
+        surf_norm = (np.cos(theta), np.sin(theta))
+        temp_posn = np.array([self.x[idx], self.z[idx]])
+        temp_posn += self.res*surf_norm
+        # make sure the surf_norm points out of material
+        temp_mat, temp_idx = self.hit_check(temp_posn)
+        if temp_mat:
+            theta += np.pi
+            surf_norm = (np.cos(theta), np.sin(theta))
 
-
+        return surf_norm
 
 
 def rect_conv(coord, res_x, res_z):
@@ -186,5 +193,5 @@ if __name__ == '__main__':
     mesh.mat_input()
     mesh.find_surf()
     mesh.plot()
-    temp_idx = mesh.surf[:, 70]
-    mesh.surf_norm([174, 25])
+    surf_norm = mesh.calc_surf_norm((174, 25))
+    print(surf_norm)
