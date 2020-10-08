@@ -142,6 +142,7 @@ class MESHGRID(object):
         """
         idx = np.rint((posn - self.res*0.5) / self.res).astype(int)
         # reverse idx in order to accomplish self.mat order
+        # print('hit = ', posn, idx)
         idx = np.flipud(idx)
         # convert idx to index format
         idx = tuple(idx)
@@ -164,7 +165,7 @@ class MESHGRID(object):
         Caculate surface normal.
 
         Inputs: index where particle hit
-        Calc searching sub-domain
+        Calc searching sub-domain in which the surface fits
         Calc cost function for surface fitting
         Calc the minimun cost function
         Calc the surface direction
@@ -172,13 +173,24 @@ class MESHGRID(object):
         Calc surface normal vector
         Output: surface normal vector and vector angle
         """
-        temp_mat_surf = self.mat_surf[idx[0]-radius:idx[0]+radius+1,
-                                      idx[1]-radius:idx[1]+radius+1]
-        temp_x = self.x[idx[0]-radius:idx[0]+radius+1,
-                        idx[1]-radius:idx[1]+radius+1]
-        temp_z = self.z[idx[0]-radius:idx[0]+radius+1,
-                        idx[1]-radius:idx[1]+radius+1]
-        print('idx = ', idx, '\n', temp_mat_surf, '\n')
+        # Calc the sub-domain boundary
+        bottom = idx[0]-radius
+        top = idx[0]+radius+1
+        left = idx[1]-radius
+        right = idx[1]+radius+1
+        # cut sub-domain if it is out of main-domain
+        if bottom < 0:
+            bottom = 0
+        if top > self.nz-1:
+            top = self.nz-1
+        if left < 0:
+            left = 0
+        if right > self.nx-1:
+            right = self.nx-1
+        # Construct the sub-domain
+        temp_mat_surf = self.mat_surf[bottom:top, left:right]
+        temp_x = self.x[bottom:top, left:right]
+        temp_z = self.z[bottom:top, left:right]
 
         def cost_func_surf_norm(theta):
             """Construct the cost func for surface fitting."""
@@ -191,11 +203,13 @@ class MESHGRID(object):
             return Qsum
 
         min_norm = minimize(cost_func_surf_norm, np.pi/4)
-        print(min_norm.success, '\n')
         theta = min_norm.x[0] + np.pi/2
         surf_norm = (np.cos(theta), np.sin(theta))
         temp_posn = np.array([self.x[idx], self.z[idx]])
         temp_posn += np.sqrt(2)/2*radius*self.res*surf_norm
+        # Check boundaries
+        temp_posn[0] = np.clip(temp_posn[0], 0.0, self.width-self.res_x*1e-3)
+        temp_posn[1] = np.clip(temp_posn[1], 0.0, self.height-self.res_z*1e-3)
         # make sure the surf_norm points out of material
         temp_mat, temp_idx = self.hit_check(temp_posn)
         if temp_mat:
