@@ -34,7 +34,7 @@ for k in range(num_ptcl):
 
     num_rflct = 0
 #    while imove_ptcl == 1 and num_rflct < 5:
-    for i in range(3000):
+    for i in range(10000):
         # advance the ptcl by delta_L
         Arp.move_ptcl(delta_L)
         # periodic b.c. at left and right bdry
