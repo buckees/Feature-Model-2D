@@ -56,10 +56,12 @@ for k in range(num_ptcl):
                     Arp.dead = 1
                     break
                 # call reflection
-                u1 = Arp.uvec
-                Arp.uvec = Arp_rflct.rotate_random(Arp.uvec)
+                # u1 = Arp.uvec
+                # Arp.uvec = Arp_rflct.rotate_random(Arp.uvec)
+                surf_norm_vec, surf_norm_theta = mesh.calc_surf_norm(hit_idx)
+                Arp.uvec = Arp_rflct.diff_rflct(surf_norm_theta)
                 num_rflct += 1
-                u2 = Arp.uvec
+                # u2 = Arp.uvec
     #            angle = np.arccos(np.clip(np.dot(-u1, u2), -1, 1))
     #            angle = angle/math.pi*180.0
     #            print(angle)
