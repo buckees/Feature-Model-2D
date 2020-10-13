@@ -30,6 +30,17 @@ class REFLECT(object):
         x2 = np.cos(theta)*x1 - np.sin(theta)*z1
         z2 = np.sin(theta)*x1 + np.cos(theta)*z1
         return np.array([x2, z2])
+    
+    def spec_rflct(self, ivec):
+        """
+        Calc the specular reflection.
+        
+        svec: surface normal vector.
+        rvec: reflective vector 
+        ivec: incident vector
+        rvec = ivec - 2*(ivec dot svec)*svec
+        """
+        return ivec - 2.0*np.dot(ivec, self.svec)*self.svec
         
     def diff_rflct(self):
         """
