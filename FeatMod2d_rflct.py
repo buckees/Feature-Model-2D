@@ -11,7 +11,8 @@ class REFLECT(object):
         self.prob = prob  # reflection probability
         self.ptcl = ptcl  # particle species
         self.mat = mat  # materiasl which particle hits
-        self.theta = 0.0  # reflection angle wrt surface normal
+        self.svec = svec  # surface normal vector at hit
+        self.stheta = stheta  # surface normal angle at hit
 
     def calc_prob(self):
         """Calc probability."""
@@ -21,7 +22,7 @@ class REFLECT(object):
             self.prob = 0.7
         return self.prob
 
-    def rotate_random(self, uvec):
+    def rotate_random(uvec):
         """Rotate the direction randomly."""
         theta = np.random.uniform(-np.pi/4.0, + np.pi/4.0)
         theta = theta + np.pi
@@ -29,10 +30,15 @@ class REFLECT(object):
         x2 = np.cos(theta)*x1 - np.sin(theta)*z1
         z2 = np.sin(theta)*x1 + np.cos(theta)*z1
         return np.array([x2, z2])
-
-    def diff_rflct(self, surf_norm_theta):
-        """Calc the diffusive refelection."""
-        temp_theta = cosine.rvs(size=1)
-        temp_theta += surf_norm_theta
-        self.theta = temp_theta[0]
-        return np.array([np.cos(self.theta), np.sin(self.theta)])
+        
+    def diff_rflct(self):
+        """
+        Calc the diffusive refelection.
+        
+        stheta = surface normal theta
+        rtheta = reflective theta wrt x=0+
+        return reflective unit vector
+        """
+        rtheta = cosine.rvs(size=1)[0]
+        rtheta += self.stheta
+        return np.array([np.cos(rtheta), np.sin(rtheta)])
