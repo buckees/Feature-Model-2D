@@ -20,8 +20,24 @@ class REFLECT(object):
         if self.mat == 'PR':
             self.prob = 1.0
         elif self.mat == 'Si':
-            self.prob = 0.7
+            self.prob = 0.5
         return self.prob
+
+    def rflct(self, ivec, erg=1.0):
+        """
+        Calc the reflection.
+        
+        ivec: incident vector
+        erg: incident energy in eV
+        return reflective vector
+        """
+        rnd = np.random.uniform(0.0, 1.0)
+        if 0.0 <= rnd < 0.33:
+            return self.spec_rflct(ivec)
+        elif 0.33 <= rnd < 0.66:
+            return self.mix_rflct(ivec, ratio=(0.7-rnd)/(rnd-0.3) )
+        else:
+            return self.diff_rflct()
 
     def revs_rflct(self, ivec):
         """Reverse the incident vector."""
@@ -67,6 +83,7 @@ class REFLECT(object):
         Calc the mixed reflection from specular and diffusive.
         
         ivec = incident vector
+        ratio = ratio of specular to diffusive
         spec_uvec = specular reflective vector
         diff_uvec = diffusive reflective vector
         mix_uvec = mixed reflective vector
