@@ -1,6 +1,7 @@
 """Feature Model 2D. Mesh file."""
 
 import numpy as np
+from math import cos, sin
 import copy
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -61,8 +62,8 @@ class MESHGRID(object):
         materials.append(m)
         m = [('PR', 3),   'rect', (70.0, 350.0, 30.0, 100.0)]
         materials.append(m)
-        m = [('Plasma', 0),   'circ', (50.0, 350.0, 30.0)]
-        materials.append(m)
+        # m = [('Plasma', 0),   'circ', (50.0, 350.0, 30.0)]
+        # materials.append(m)
 
         for material in materials:
             mater = material[0]
@@ -203,8 +204,9 @@ class MESHGRID(object):
             return Qsum
 
         min_norm = minimize(cost_func_surf_norm, np.pi/4)
+        # obtain the surface normal
         theta = min_norm.x[0] + np.pi/2
-        surf_norm = (np.cos(theta), np.sin(theta))
+        surf_norm = np.array([cos(theta), sin(theta)])
         temp_posn = np.array([self.x[idx], self.z[idx]])
         temp_posn += np.sqrt(2)/2*radius*self.res*surf_norm
         # Check boundaries
@@ -214,7 +216,7 @@ class MESHGRID(object):
         temp_mat, temp_idx = self.hit_check(temp_posn)
         if temp_mat:
             theta += np.pi
-            surf_norm = (np.cos(theta), np.sin(theta))
+            surf_norm = np.array([cos(theta), sin(theta)])
 
         return surf_norm, theta
 
