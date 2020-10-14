@@ -23,7 +23,13 @@ class REFLECT(object):
         return self.prob
 
     def rand_rflct(self):
-        """Rotate the direction randomly."""
+        """
+        Calc the uniform random refelection.
+        
+        stheta = surface normal theta
+        rtheta = reflective theta wrt x=0+
+        return reflective unit vector
+        """
         rtheta = np.random.uniform(-np.pi/2.0, np.pi/2.0)
         rtheta += self.stheta
         return np.array([np.cos(rtheta), np.sin(rtheta)])
