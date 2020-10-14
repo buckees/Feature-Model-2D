@@ -23,6 +23,10 @@ class REFLECT(object):
             self.prob = 0.7
         return self.prob
 
+    def revs_rflct(self, ivec):
+        """Reverse the incident vector."""
+        return -ivec
+
     def rand_rflct(self):
         """
         Calc the uniform random refelection.
