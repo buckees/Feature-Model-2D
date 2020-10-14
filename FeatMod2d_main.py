@@ -56,9 +56,11 @@ for k in range(num_ptcl):
                     Arp.dead = 1
                     break
                 # call reflection
-                # Arp.uvec = Arp_rflct.rotate_random(Arp.uvec)
                 Arp_rflct.svec, Arp_rflct.stheta = mesh.calc_surf_norm(hit_idx)
-                Arp.uvec = Arp_rflct.diff_rflct()
+                # Arp.uvec = Arp_rflct.revs_rflct(Arp.uvec)
+                # Arp.uvec = Arp_rflct.rand_rflct()
+                # Arp.uvec = Arp_rflct.diff_rflct()
+                Arp.uvec = Arp_rflct.spec_rflct(Arp.uvec)
                 num_rflct += 1
             else:
                 # now ireact = 1
@@ -72,16 +74,29 @@ for k in range(num_ptcl):
     record[k] = np.array(record[k]).T
 
 
-fig, ax = plt.subplots(1, 1, figsize=(2, 8),
-                       constrained_layout=True)
+
 colMap = copy.copy(cm.Accent)
 colMap.set_under(color='white')
-x = np.linspace(0.0, mesh.width, mesh.nx)
-z = np.linspace(0.0, mesh.height, mesh.nz)
-X, Z = np.meshgrid(x, z)
-ax.contourf(X, Z, mesh.mat, cmap=colMap, vmin=0.2, extend='both')
+
+fig, axes = plt.subplots(1, 2, figsize=(4, 8),
+                         constrained_layout=True)
+
+ax = axes[0]
+ax.contourf(mesh.x, mesh.z, mesh.mat, cmap=colMap, vmin=0.2, extend='both')
+ax.set_xlim(0.0, mesh.width)
+ax.set_ylim(0.0, mesh.height)
+for i in range(10):
+    ax.plot(record[num_ptcl-i-1][0, :], record[num_ptcl-i-1][1, :],
+            marker='o', markersize=1, linestyle='None')
+
+
+ax = axes[1]
+ax.scatter(mesh.x, mesh.z, c=mesh.mat, s=1, cmap=colMap, vmin=0.2)
+ax.set_xlim(0.0, mesh.width)
+ax.set_ylim(0.0, mesh.height)
+
 for i in range(10):
     ax.plot(record[num_ptcl-i-1][0, :], record[num_ptcl-i-1][1, :],
             marker='o', markersize=1, linestyle='None')
 plt.show(fig)
-fig.savefig('etching_demo.png')
+fig.savefig('etching_demo.png', dpi=600)
