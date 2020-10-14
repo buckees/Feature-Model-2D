@@ -62,7 +62,7 @@ class MESHGRID(object):
         materials.append(m)
         m = [('PR', 3),   'rect', (70.0, 350.0, 30.0, 100.0)]
         materials.append(m)
-        # m = [('Plasma', 0),   'circ', (50.0, 350.0, 30.0)]
+        # m = [('Vac', 0),   'circ', (50.0, 350.0, 30.0)]
         # materials.append(m)
 
         for material in materials:
