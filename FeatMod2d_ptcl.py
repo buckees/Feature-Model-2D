@@ -89,7 +89,7 @@ class PARTICLE(object):
             lost, periodic and reflective
         left bdry is alway at 0.0
         """
-        if self.posn[1] > height:
+        if self.posn[1] >= height:
             self.dead = 1
         elif imode == 'lost':
             if not (0.0 < self.posn[0] < width):
