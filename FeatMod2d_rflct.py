@@ -7,7 +7,8 @@ from scipy.stats import cosine
 class REFLECT(object):
     """Reflection Probability."""
 
-    def __init__(self, ptcl='Ar+', mat='PR', prob=1.0):
+    def __init__(self, ptcl='Ar+', mat='PR', prob=1.0, 
+                 svec=np.array([0.0, 1.0]), stheta=np.pi/2.0):
         self.prob = prob  # reflection probability
         self.ptcl = ptcl  # particle species
         self.mat = mat  # materiasl which particle hits
