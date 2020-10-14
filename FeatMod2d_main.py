@@ -57,10 +57,7 @@ for k in range(num_ptcl):
                     break
                 # call reflection
                 Arp_rflct.svec, Arp_rflct.stheta = mesh.calc_surf_norm(hit_idx)
-                # Arp.uvec = Arp_rflct.revs_rflct(Arp.uvec)
-                # Arp.uvec = Arp_rflct.rand_rflct()
-                # Arp.uvec = Arp_rflct.diff_rflct()
-                Arp.uvec = Arp_rflct.spec_rflct(Arp.uvec)
+                Arp.uvec = Arp_rflct.rflct(Arp.uvec)
                 num_rflct += 1
             else:
                 # now ireact = 1
