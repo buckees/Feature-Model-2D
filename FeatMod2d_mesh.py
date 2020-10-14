@@ -220,6 +220,47 @@ class MESHGRID(object):
 
         return surf_norm, theta
 
+    def find_float_cell(self):
+        """
+        Search for the cells which are not connected.
+        
+        Scan each cell, check its 4 neighours, top, bottom, left and right.
+        If they are all empty, the cell is identified as a floating cell, 
+        which will be dropped to bottom.
+        """
+        for j in range(1, self.nz-1):
+            for i in range(self.nx):
+                # if mat[i,j] is not 0
+                if self.mat[j, i]:
+                    # check its 4 neighbours
+                    bottom = self.mat[j-1, i]
+                    top = self.mat[j+1, i]
+                    if i == 0:
+                        left = self.mat[j, self.nx-1]
+                    else:
+                        left = self.mat[j, i-1]
+                    if i == self.nx-1:
+                        right = self.mat[j, 0]
+                    else:
+                        right = self.mat[j, i+1]
+                    if (bottom + top + left + right) == 0:
+                        self.drop_cell((j, i))
+
+    def drop_cell(self, idx):
+        """
+        Drop the cells at idx.
+        
+        Drop the cell by 1 cell down until it hit bottom materials.
+        """
+        idx_j, idx_i = idx
+        # remove the cell at idx
+        temp_mat = self.mat[idx]
+        self.mat[idx] = 0
+        bottom = self.mat[idx_j-1, idx_i]
+        while bottom == 0:
+            idx_j -= 1
+            bottom = self.mat[idx_j-1, idx_i]
+        self.mat[idx_j, idx_i] = temp_mat
 
 def rect_conv(coord, res_x, res_z):
     """Convert rectangular coordinates to index."""
