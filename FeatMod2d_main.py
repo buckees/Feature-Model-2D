@@ -8,7 +8,8 @@ import copy
 from FeatMod2d_ops import width, height, res_x, res_z, num_ptcl, \
                           threshold, max_rflct
 from FeatMod2d_mesh import MESHGRID
-from FeatMod2d_ptcl import PARTICLE
+# from FeatMod2d_ptcl import PARTICLE
+from Species import Arp
 from FeatMod2d_rflct import REFLECT
 
 # create mesh
@@ -21,7 +22,7 @@ mesh.plot()
 record = [[] for i in range(num_ptcl)]
 
 delta_L = min(res_x, res_z)
-Arp = PARTICLE('Ar+', 'Ion',  32.0,     1)
+# Arp = PARTICLE('Ar+', 'Ion',  32.0,     1)
 
 Arp_rflct = REFLECT()
 
