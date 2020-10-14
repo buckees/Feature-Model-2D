@@ -53,3 +53,19 @@ class REFLECT(object):
         rtheta = cosine.rvs(size=1)[0]
         rtheta += self.stheta
         return np.array([np.cos(rtheta), np.sin(rtheta)])
+
+    def mix_rflct(self, ivec, ratio=1.0):
+        """
+        Calc the mixed reflection from specular and diffusive.
+        
+        ivec = incident vector
+        spec_uvec = specular reflective vector
+        diff_uvec = diffusive reflective vector
+        mix_uvec = mixed reflective vector
+        """
+        spec_uvec = self.spec_rflct(ivec)
+        diff_uvec = self.diff_rflct()
+        mix_uvec = ratio/(ratio+1.0)*spec_uvec + 1.0/(ratio+1.0)*diff_uvec
+        return mix_uvec/np.linalg.norm(mix_uvec)
+        
+        
