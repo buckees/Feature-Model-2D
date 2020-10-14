@@ -47,6 +47,8 @@ class PARTICLE(object):
             theta = np.random.normal(mu, sigma)
         elif idstrb == 'Cosine':
             theta = cosine.rvs(scale=np.pi/2.0, size=1)
+        elif idstrb == 'Mono':
+            theta = np.pi/4
 
         self.uvec = np.array([math.sin(theta), -math.cos(theta)])
 
