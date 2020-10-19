@@ -17,7 +17,7 @@ mesh = MESHGRID(width, height, res_x, res_z)
 print(mesh)
 mesh.mat_input()
 mesh.find_surf()
-mesh.plot()
+# mesh.plot()
 
 record = [[] for i in range(num_ptcl)]
 
@@ -28,7 +28,7 @@ Arp_rflct = REFLECT()
 
 for k in range(num_ptcl):
     Arp.dead = 0
-    Arp.init_posn(width, height)
+    Arp.init_posn(width, height-0.0)  
     Arp.init_uvec('Normal')
 #    Arp.init_plot()
     record[k].append(Arp.posn.copy())
@@ -48,6 +48,13 @@ for k in range(num_ptcl):
         if hit_mat:
             # at this position, th ptcl hits a mat
             # decide wehter a reflection or reaction
+            
+            # once the particle hit, make the particle dead
+            Arp.dead = 1
+            # count the hit 
+            mesh.hit_count[hit_idx] += 1
+            if Arp.dead == 1:
+                break
             rnd = np.random.uniform(0.0, 1.0)
             mat_name = mesh.mater[hit_mat]
             rflct = REFLECT(Arp.name, mat_name, 1.0)
@@ -77,7 +84,7 @@ for k in range(num_ptcl):
 colMap = copy.copy(cm.Accent)
 colMap.set_under(color='white')
 
-fig, axes = plt.subplots(1, 2, figsize=(4, 8),
+fig, axes = plt.subplots(1, 3, figsize=(6, 8),
                          constrained_layout=True)
 
 ax = axes[0]
@@ -97,5 +104,17 @@ ax.set_ylim(0.0, mesh.height)
 for i in range(10):
     ax.plot(record[num_ptcl-i-1][0, :], record[num_ptcl-i-1][1, :],
             marker='o', markersize=1, linestyle='None')
+
+ax = axes[2]
+ax.scatter(mesh.x, mesh.z, c=mesh.hit_count, s=1, cmap=colMap, vmin=0.2)
+ax.set_xlim(0.0, mesh.width)
+ax.set_ylim(0.0, mesh.height)
+# produce a legend with the unique colors from the scatter
+# legend1 = ax.legend(*scatter.legend_elements(),
+#                     loc="lower left", title="Classes")
+# ax.add_artist(legend1)
+
 plt.show(fig)
 fig.savefig('etching_demo.png', dpi=600)
+
+mesh.plot_hit_count()
