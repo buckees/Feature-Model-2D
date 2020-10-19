@@ -36,6 +36,7 @@ class MESHGRID(object):
         # construct a mat-like matrix for surface
         # mat_surf = 1 if a surface node; 0 if not.
         self.mat_surf = np.zeros_like(self.mat).astype(int)
+        self.hit_count = np.zeros_like(self.mat).astype(int)
         self.surf = np.array([])  # surface node
         self.mater = []  # materials name <--> materails No.
 
@@ -62,8 +63,8 @@ class MESHGRID(object):
         materials.append(m)
         m = [('PR', 3),   'rect', (70.0, 350.0, 30.0, 100.0)]
         materials.append(m)
-        # m = [('Vac', 0),   'circ', (50.0, 350.0, 30.0)]
-        # materials.append(m)
+        m = [('Vac', 0),  'rect', (30.0, 200.0, 40.0, 150.0)]
+        materials.append(m)
 
         for material in materials:
             mater = material[0]
@@ -261,6 +262,30 @@ class MESHGRID(object):
             idx_j -= 1
             bottom = self.mat[idx_j-1, idx_i]
         self.mat[idx_j, idx_i] = temp_mat
+    
+    def plot_hit_count(self):
+        """Plot hit count number as a list."""
+        self.hit_count_list = []
+        for i in range(self.nx):
+            for j in reversed(range(self.nz-1)):
+                # if mat[i,j] is not 0
+                if self.hit_count[j, i]:
+                    self.hit_count_list.append(self.hit_count[j, i])
+        fig, axes = plt.subplots(2, 1, figsize=(8, 8),
+                         constrained_layout=True, dpi=600)
+        ax = axes[0]
+        ax.plot(self.hit_count_list)
+        ax.set_ylim(0, 500)
+        ax = axes[1]
+        ax.scatter(range(len(self.hit_count_list)), self.hit_count_list, 
+                   s=4)
+        ax.set_ylim(0, 500)
+        plt.show(fig)
+        fig.savefig('hit_count_list.png', dpi=600)
+
+
+        
+                
 
 def rect_conv(coord, res_x, res_z):
     """Convert rectangular coordinates to index."""
