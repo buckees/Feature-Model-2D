@@ -20,6 +20,7 @@ mesh.find_surf()
 # mesh.plot()
 
 rec_traj = [[] for i in range(num_ptcl)]
+rec_surf = []
 
 delta_L = min(res_x, res_z)
 # Arp = PARTICLE('Ar+', 'Ion',  32.0,     1)
@@ -58,6 +59,7 @@ for k in range(num_ptcl):
                     break
                 # call reflection
                 Arp_rflct.svec, Arp_rflct.stheta = mesh.calc_surf_norm(hit_idx)
+                rec_surf.append([hit_idx, Arp_rflct.svec.copy()])
                 Arp.uvec = Arp_rflct.rflct(Arp.uvec)
                 num_rflct += 1
             else:
@@ -79,8 +81,23 @@ colMap.set_under(color='white')
 def plot_traj(ax, traj):
     for i in range(10):
         ax.plot(traj[num_ptcl - i - 1][0, :], traj[num_ptcl - i - 1][1, :],
-                marker='o', markersize=4, linestyle='-')
+                marker='o', markersize=1, linestyle='-')
 
+def plot_surf_norm(ax, posn, svec):
+    ax.quiver(posn[1], posn[0],
+              svec[0], svec[1])
+
+def idx2posn(idx):
+    """
+    Convert index to position.
+
+    idx: tuple (j, i), where j is vertical index and i is horizontal index.
+    """
+    idx = np.array(idx)
+    posn = np.multiply(idx, mesh.res) + mesh.res*0.5
+    return posn
+
+print(rec_surf)
 
 fig, axes = plt.subplots(1, 2, figsize=(4, 8),
                          constrained_layout=True)
@@ -96,6 +113,10 @@ ax.scatter(mesh.x, mesh.z, c=mesh.mat, s=1, cmap=colMap, vmin=0.2)
 ax.set_xlim(0.0, mesh.width)
 ax.set_ylim(0.0, mesh.height)
 plot_traj(ax, rec_traj)
+for item in rec_surf:
+    temp_idx, temp_svec = item
+    temp_posn = idx2posn(temp_idx)
+    plot_surf_norm(ax, temp_posn, temp_svec)
 
 plt.show()
 fig.savefig('etching_demo.png', dpi=600)
