@@ -12,6 +12,17 @@ from FeatMod2d_mesh import MESHGRID
 from Species import Arp
 from FeatMod2d_rflct import REFLECT
 
+def idx2posn(idx):
+    """
+    Convert index to position.
+
+    idx: tuple (j, i), where j is vertical index and i is horizontal index.
+    """
+    idx = np.array(idx)
+    idx = np.flipud(idx)
+    posn = np.multiply(idx, mesh.res) + mesh.res*0.5
+    return posn
+
 # create mesh
 mesh = MESHGRID(width, height, res_x, res_z)
 print(mesh)
@@ -22,7 +33,7 @@ mesh.find_surf()
 rec_traj = [[] for i in range(num_ptcl)]
 rec_surf = []
 
-delta_L = min(res_x, res_z)
+delta_L = min(res_x, res_z)*0.5
 # Arp = PARTICLE('Ar+', 'Ion',  32.0,     1)
 
 Arp_rflct = REFLECT()
@@ -61,6 +72,8 @@ for k in range(num_ptcl):
                 Arp_rflct.svec, Arp_rflct.stheta = mesh.calc_surf_norm(hit_idx)
                 rec_surf.append([hit_idx, Arp_rflct.svec.copy()])
                 Arp.uvec = Arp_rflct.rflct(Arp.uvec)
+                # update ptcl position as the hit cell center
+                # Arp.posn = np.array([mesh.x[hit_idx], mesh.z[hit_idx]])
                 num_rflct += 1
             else:
                 # now ireact = 1
@@ -81,21 +94,13 @@ colMap.set_under(color='white')
 def plot_traj(ax, traj):
     for i in range(10):
         ax.plot(traj[num_ptcl - i - 1][0, :], traj[num_ptcl - i - 1][1, :],
-                marker='o', markersize=1, linestyle='-')
+                marker='o', markersize=0.1, linestyle='-', linewidth=0.01)
 
 def plot_surf_norm(ax, posn, svec):
-    ax.quiver(posn[1], posn[0],
+    ax.quiver(posn[0], posn[1],
               svec[0], svec[1])
 
-def idx2posn(idx):
-    """
-    Convert index to position.
 
-    idx: tuple (j, i), where j is vertical index and i is horizontal index.
-    """
-    idx = np.array(idx)
-    posn = np.multiply(idx, mesh.res) + mesh.res*0.5
-    return posn
 
 print(rec_surf)
 
