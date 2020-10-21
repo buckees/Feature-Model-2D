@@ -17,9 +17,9 @@ mesh = MESHGRID(width, height, res_x, res_z)
 print(mesh)
 mesh.mat_input()
 mesh.find_surf()
-mesh.plot()
+# mesh.plot()
 
-record = [[] for i in range(num_ptcl)]
+rec_traj = [[] for i in range(num_ptcl)]
 
 delta_L = min(res_x, res_z)
 # Arp = PARTICLE('Ar+', 'Ion',  32.0,     1)
@@ -31,7 +31,7 @@ for k in range(num_ptcl):
     Arp.init_posn(width, height)
     Arp.init_uvec('Normal')
 #    Arp.init_plot()
-    record[k].append(Arp.posn.copy())
+    rec_traj[k].append(Arp.posn.copy())
 
     num_rflct = 0
 #    while imove_ptcl == 1 and num_rflct < 5:
@@ -40,8 +40,8 @@ for k in range(num_ptcl):
         Arp.move_ptcl(delta_L)
         # periodic b.c. at left and right bdry
         Arp.bdry_check(mesh.width, mesh.height, 'periodic')
-        # record ptcl trajectory
-        record[k].append(Arp.posn.copy())
+        # rec_traj ptcl trajectory
+        rec_traj[k].append(Arp.posn.copy())
         if Arp.dead:
             break
         hit_mat, hit_idx = mesh.hit_check(Arp.posn)
@@ -70,11 +70,17 @@ for k in range(num_ptcl):
         if Arp.dead:
             break
 
-    record[k] = np.array(record[k]).T
+    rec_traj[k] = np.array(rec_traj[k]).T
 
 
 colMap = copy.copy(cm.Accent)
 colMap.set_under(color='white')
+
+def plot_traj(ax, traj):
+    for i in range(10):
+        ax.plot(traj[num_ptcl - i - 1][0, :], traj[num_ptcl - i - 1][1, :],
+                marker='o', markersize=4, linestyle='-')
+
 
 fig, axes = plt.subplots(1, 2, figsize=(4, 8),
                          constrained_layout=True)
@@ -83,18 +89,13 @@ ax = axes[0]
 ax.contourf(mesh.x, mesh.z, mesh.mat, cmap=colMap, vmin=0.2, extend='both')
 ax.set_xlim(0.0, mesh.width)
 ax.set_ylim(0.0, mesh.height)
-for i in range(10):
-    ax.plot(record[num_ptcl-i-1][0, :], record[num_ptcl-i-1][1, :],
-            marker='o', markersize=1, linestyle='None')
-
+plot_traj(ax, rec_traj)
 
 ax = axes[1]
 ax.scatter(mesh.x, mesh.z, c=mesh.mat, s=1, cmap=colMap, vmin=0.2)
 ax.set_xlim(0.0, mesh.width)
 ax.set_ylim(0.0, mesh.height)
+plot_traj(ax, rec_traj)
 
-for i in range(10):
-    ax.plot(record[num_ptcl-i-1][0, :], record[num_ptcl-i-1][1, :],
-            marker='o', markersize=1, linestyle='None')
 plt.show()
 fig.savefig('etching_demo.png', dpi=600)
