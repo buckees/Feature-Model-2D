@@ -99,9 +99,6 @@ def plot_surf_norm(ax, posn, svec):
               svec[0], svec[1])
 
 
-
-print(rec_surf)
-
 fig, axes = plt.subplots(1, 2, figsize=(4, 8),
                          constrained_layout=True)
 
