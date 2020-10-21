@@ -88,7 +88,7 @@ class MESHGRID(object):
 
     def find_surf(self):
         """Search for the surface nodes."""
-        surf = []
+        self.surf = []
         # search surface within materials
         for j in range(1, self.nz-1):
             for i in range(self.nx):
@@ -105,7 +105,7 @@ class MESHGRID(object):
                          * self.mat[(j+1) % self.nz, (i-1) % self.nx] \
                          * self.mat[(j+1) % self.nz, (i+1) % self.nx]
                     if not temp:
-                        surf.append((j, i))
+                        self.surf.append((j, i))
                         self.mat_surf[j, i] = 1
 
         # search for left and right boundaries
@@ -114,7 +114,7 @@ class MESHGRID(object):
 #                if not self.mat[j,i]:
 #                    surf.append((j,i))
 
-        self.surf = np.array(surf).T
+        # self.surf = np.array(surf).T
 
     def plot(self):
         """Plot mesh and surface."""
