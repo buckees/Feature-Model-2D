@@ -162,11 +162,14 @@ class MESHGRID(object):
             if rnd < threshold:
                 self.mat[idx] = 0
 
-    def calc_surf_norm(self, idx, radius=2):
+    def calc_surf_norm(self, idx, radius=2, imode=2):
         """
         Caculate surface normal.
 
-        Inputs: index where particle hit
+        idx: index where particle hit
+        radius: the sub-domain where the surf norm is calc
+        imode = 1: fitting plane to the surf sites within the sub-domain
+                2: sum the vector of hit site to vac sites 
         Calc searching sub-domain in which the surface fits
         Calc cost function for surface fitting
         Calc the minimun cost function
