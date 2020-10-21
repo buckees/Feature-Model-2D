@@ -203,8 +203,9 @@ class MESHGRID(object):
             C = A*self.x[idx] + B*self.z[idx]
             Q = A*temp_x + B*temp_z - C
             Q = np.multiply(Q, temp_mat_surf)
+            Qsum = -abs(Q.sum())
             Q2 = np.power(Q, 2)
-            Qsum = Q2.sum()
+            Qsum += Q2.sum()
             return Qsum
 
         min_norm = minimize(cost_func_surf_norm, np.pi/4)
