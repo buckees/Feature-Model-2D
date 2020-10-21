@@ -30,9 +30,10 @@ Arp_rflct = REFLECT()
 for k in range(num_ptcl):
     Arp.dead = 0
     Arp.init_posn(width, height)
+    # record initial position
+    rec_traj[k].append(Arp.posn.copy())
     Arp.init_uvec('Normal')
 #    Arp.init_plot()
-    rec_traj[k].append(Arp.posn.copy())
 
     num_rflct = 0
 #    while imove_ptcl == 1 and num_rflct < 5:
@@ -42,25 +43,33 @@ for k in range(num_ptcl):
         # periodic b.c. at left and right bdry
         Arp.bdry_check(mesh.width, mesh.height, 'periodic')
         # rec_traj ptcl trajectory
-        rec_traj[k].append(Arp.posn.copy())
+        # rec_traj[k].append(Arp.posn.copy())
         if Arp.dead:
+            # record ptcl posn when dead
+            rec_traj[k].append(Arp.posn.copy())
             break
         hit_mat, hit_idx = mesh.hit_check(Arp.posn)
         if hit_mat:
+            # record the hit point
+            rec_traj[k].append(Arp.posn.copy())
             # at this position, th ptcl hits a mat
             # decide wehter a reflection or reaction
-            rnd = np.random.uniform(0.0, 1.0)
             mat_name = mesh.mater[hit_mat]
+            rnd = np.random.uniform(0.0, 1.0)
             rflct = REFLECT(Arp.name, mat_name, 1.0)
             prob = rflct.calc_prob()
             if rnd < prob:
                 if num_rflct > max_rflct:
                     Arp.dead = 1
+                    # record ptcl posn when dead
+                    rec_traj[k].append(Arp.posn.copy())
                     break
                 # call reflection
                 Arp_rflct.svec, Arp_rflct.stheta = mesh.calc_surf_norm(hit_idx)
                 rec_surf.append([hit_idx, Arp_rflct.svec.copy()])
-                Arp.uvec = Arp_rflct.rflct(Arp.uvec)
+                # use only specular reflection
+                Arp.uvec = Arp_rflct.spec_rflct(Arp.uvec)
+                # Arp.uvec = Arp_rflct.rflct(Arp.uvec)
                 # update ptcl position as the hit cell center
                 # Arp.posn = np.array([mesh.x[hit_idx], mesh.z[hit_idx]])
                 num_rflct += 1
@@ -83,7 +92,7 @@ colMap.set_under(color='white')
 def plot_traj(ax, traj):
     for i in range(10):
         ax.plot(traj[num_ptcl - i - 1][0, :], traj[num_ptcl - i - 1][1, :],
-                marker='o', markersize=0.1, linestyle='-', linewidth=0.01)
+                marker='o', markersize=0.3, linestyle='-', linewidth=0.1)
 
 def plot_surf_norm(ax, posn, svec):
     ax.quiver(posn[0], posn[1],
