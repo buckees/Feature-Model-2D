@@ -26,9 +26,11 @@ class MESHGRID(object):
 #        --(0, nj)--(1, nj)--(2, nj)...(98, nj)--(99, nj)---
         self.nx = int(np.ceil(width/res_x))  # num of cells in x
         self.nz = int(np.ceil(height/res_z))  # num of cels iin z
-        # init x and z coordinates
-        tempx = np.linspace(0.0, self.width, self.nx)
-        tempz = np.linspace(0.0, self.height, self.nz)
+        # init x, z coordinates, which represent the cell center 
+        tempx = np.linspace(0.0 + 0.5*self.res_x, 
+                            self.width - 0.5*self.res_x, self.nx)
+        tempz = np.linspace(0.0 + 0.5*self.res_z, 
+                            self.height - 0.5*self.res_z, self.nz)
         self.x, self.z = np.meshgrid(tempx, tempz)
         # mesh materials is assigned to self.mat matrix
         # note that the shape of self.mat is (nz, nx)
