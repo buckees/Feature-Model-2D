@@ -132,7 +132,7 @@ class MESHGRID(object):
         #              'o', )
         # axes[1].set_xlim(0, self.width)
         # axes[1].set_ylim(0, self.height)
-        plt.show(fig)
+        plt.show()
 
     def hit_check(self, posn):
         """

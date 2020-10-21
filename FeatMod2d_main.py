@@ -73,7 +73,6 @@ for k in range(num_ptcl):
     record[k] = np.array(record[k]).T
 
 
-
 colMap = copy.copy(cm.Accent)
 colMap.set_under(color='white')
 
@@ -97,5 +96,5 @@ ax.set_ylim(0.0, mesh.height)
 for i in range(10):
     ax.plot(record[num_ptcl-i-1][0, :], record[num_ptcl-i-1][1, :],
             marker='o', markersize=1, linestyle='None')
-plt.show(fig)
+plt.show()
 fig.savefig('etching_demo.png', dpi=600)
