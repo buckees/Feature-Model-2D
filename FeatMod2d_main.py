@@ -85,6 +85,9 @@ for k in range(num_ptcl):
 
     rec_traj[k] = np.array(rec_traj[k]).T
 
+for temp_idx in mesh.surf:
+    temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx)
+    rec_surf.append([temp_idx, temp_svec])
 
 colMap = copy.copy(cm.Accent)
 colMap.set_under(color='white')
