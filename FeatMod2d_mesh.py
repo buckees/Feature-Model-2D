@@ -145,7 +145,6 @@ class MESHGRID(object):
         """
         idx = np.rint((posn - self.res*0.5) / self.res).astype(int)
         # reverse idx in order to accomplish self.mat order
-        # print('hit = ', posn, idx)
         idx = np.flipud(idx)
         # convert idx to index format
         idx = tuple(idx)
