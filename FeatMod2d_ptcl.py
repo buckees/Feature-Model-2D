@@ -76,7 +76,7 @@ class PARTICLE(object):
         axes[0].set_ylim(-1.0, 0.0)
         axes[1].quiver(self.posn[0], self.posn[1],
                        self.uvec[0], self.uvec[1])
-        plt.show(fig)
+        plt.show()
 
     def move_ptcl(self, delta_L):
         """Move each partile in a length of delta_L along its v-vector."""
