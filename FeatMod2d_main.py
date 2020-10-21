@@ -12,17 +12,6 @@ from FeatMod2d_mesh import MESHGRID
 from Species import Arp
 from FeatMod2d_rflct import REFLECT
 
-def idx2posn(idx):
-    """
-    Convert index to position.
-
-    idx: tuple (j, i), where j is vertical index and i is horizontal index.
-    """
-    idx = np.array(idx)
-    idx = np.flipud(idx)
-    posn = np.multiply(idx, mesh.res) + mesh.res*0.5
-    return posn
-
 # create mesh
 mesh = MESHGRID(width, height, res_x, res_z)
 print(mesh)
@@ -120,7 +109,7 @@ ax.set_ylim(0.0, mesh.height)
 plot_traj(ax, rec_traj)
 for item in rec_surf:
     temp_idx, temp_svec = item
-    temp_posn = idx2posn(temp_idx)
+    temp_posn = np.array([mesh.x[temp_idx], mesh.z[temp_idx]])
     plot_surf_norm(ax, temp_posn, temp_svec)
 
 plt.show()
