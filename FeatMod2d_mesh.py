@@ -69,7 +69,7 @@ class MESHGRID(object):
 
         for material in materials:
             mater = material[0]
-            print(mater)
+            # print(mater)
             itype = material[1]
             if itype == 'rect':
                 coord = material[2]
@@ -273,7 +273,7 @@ class MESHGRID(object):
             # sub_mat_surf consists of 1(surf) and -1(surf_vac)
             # surf_vac is not used when imode == 2, zero out 1
             temp_sub_mat_surf = np.where(sub_mat_surf == 1, 0, sub_mat_surf)
-            print(temp_sub_mat_surf)
+            # print(temp_sub_mat_surf)
             temp_vecx = np.multiply(self.x[idx] - sub_x, temp_sub_mat_surf)
             temp_vecz = np.multiply(self.z[idx] - sub_z, temp_sub_mat_surf)
             # Calc the vector norm**2
@@ -285,7 +285,7 @@ class MESHGRID(object):
             temp_vecz = np.divide(temp_vecz, temp_vec_norm,
                                   out=np.zeros_like(temp_vec_norm), 
                                   where=temp_vec_norm!=0)
-            print(temp_vecz)
+            # print(temp_vecz)
             temp_vecx = temp_vecx.sum()
             temp_vecz = temp_vecz.sum()
             surf_norm = np.array([temp_vecx, temp_vecz])
