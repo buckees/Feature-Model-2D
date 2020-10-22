@@ -68,7 +68,7 @@ for k in range(num_ptcl):
                     break
                 # call reflection
                 Arp_rflct.svec, Arp_rflct.stheta = \
-                    mesh.calc_surf_norm(hit_idx, radius=1, imode='Sum Vector')
+                    mesh.calc_surf_norm(hit_idx, radius=2, imode='Sum Vector')
                 rec_surf.append([hit_idx, Arp_rflct.svec.copy()])
                 # use only specular reflection
                 Arp.uvec = Arp_rflct.spec_rflct(Arp.uvec)
@@ -91,7 +91,7 @@ for k in range(num_ptcl):
 
 rec_surf = []
 for temp_idx in mesh.surf:
-    temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx, radius=1,
+    temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx, radius=2,
                                                  imode="Sum Vector")
     rec_surf.append([temp_idx, temp_svec])
 
