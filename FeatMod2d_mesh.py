@@ -177,7 +177,7 @@ class MESHGRID(object):
             if rnd < threshold:
                 self.mat[idx] = 0
 
-    def calc_surf_norm(self, idx, radius=2, imode=2):
+    def calc_surf_norm(self, idx, radius=1, imode=2):
         """
         Caculate surface normal.
 
@@ -221,12 +221,15 @@ class MESHGRID(object):
         sub_z = self.z[bottom:top, left:right]
 
         if imode == 1:
+            # sub_mat_surf consists of 1(surf) and -1(surf_vac)
+            # surf_vac is not used when imode == 1, zero out -1
+            temp_sub_mat_surf = np.where(sub_mat_surf == -1, 0, sub_mat_surf)
             def cost_func_surf_norm(theta):
                 """Construct the cost func for surface fitting."""
                 A, B = -np.sin(theta), np.cos(theta)
                 C = A*self.x[idx] + B*self.z[idx]
                 Q = A*sub_x + B*sub_z - C
-                Q = np.multiply(Q, sub_mat_surf)
+                Q = np.multiply(Q, temp_sub_mat_surf)
                 Qsum = -abs(Q.sum())
                 Q2 = np.power(Q, 2)
                 Qsum += Q2.sum()
@@ -246,9 +249,20 @@ class MESHGRID(object):
             if temp_mat:
                 theta += np.pi
                 surf_norm = np.array([cos(theta), sin(theta)])
+        
         elif imode == 2:
-            for temp_mat_surf, temp_x, temp_z in zip(np.nditer(temp_))
-            pass
+            # sub_mat_surf consists of 1(surf) and -1(surf_vac)
+            # surf_vac is not used when imode == 2, zero out 1
+            temp_sub_mat_surf = np.where(sub_mat_surf == 1, 0, sub_mat_surf)
+            print(temp_sub_mat_surf)
+            temp_vecx = np.multiply(self.x[idx] - sub_x, temp_sub_mat_surf)
+            print(temp_vecx)
+            temp_vecz = np.multiply(self.z[idx] - sub_z, temp_sub_mat_surf)
+            temp_vecx = temp_vecx.sum()
+            temp_vecz = temp_vecz.sum()
+            surf_norm = np.array([temp_vecx, temp_vecz])
+            surf_norm = surf_norm/np.linalg.norm(surf_norm)
+            theta = np.arccos(surf_norm)
         
         return surf_norm, theta
 
@@ -309,12 +323,7 @@ if __name__ == '__main__':
     mesh.find_surf()
     mesh.find_surf_vac()
     mesh.plot()
-    temp_idx = mesh.surf[1]
-    print('idx=', temp_idx)
-    surf_norm, theta = mesh.calc_surf_norm(temp_idx)
-    print(surf_norm)
-    temp_posn = temp_idx*mesh.res
-
+    
     colMap = copy.copy(cm.get_cmap("Accent"))
     colMap.set_under(color='white')
 
