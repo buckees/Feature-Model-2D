@@ -65,7 +65,8 @@ for k in range(num_ptcl):
                     rec_traj[k].append(Arp.posn.copy())
                     break
                 # call reflection
-                Arp_rflct.svec, Arp_rflct.stheta = mesh.calc_surf_norm(hit_idx, radius=1)
+                Arp_rflct.svec, Arp_rflct.stheta = \
+                    mesh.calc_surf_norm(hit_idx, radius=1, imode='Sum Vector')
                 rec_surf.append([hit_idx, Arp_rflct.svec.copy()])
                 # use only specular reflection
                 Arp.uvec = Arp_rflct.spec_rflct(Arp.uvec)
