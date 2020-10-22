@@ -177,7 +177,7 @@ class MESHGRID(object):
             if rnd < threshold:
                 self.mat[idx] = 0
 
-    def calc_surf_norm(self, idx, radius=1, imode=2):
+    def calc_surf_norm(self, idx, radius=1, imode="Fit Plane"):
         """
         Caculate surface normal.
 
@@ -220,7 +220,7 @@ class MESHGRID(object):
         sub_x = self.x[bottom:top, left:right]
         sub_z = self.z[bottom:top, left:right]
 
-        if imode == 1:
+        if imode == "Fit Plane":
             # sub_mat_surf consists of 1(surf) and -1(surf_vac)
             # surf_vac is not used when imode == 1, zero out -1
             temp_sub_mat_surf = np.where(sub_mat_surf == -1, 0, sub_mat_surf)
@@ -250,7 +250,7 @@ class MESHGRID(object):
                 theta += np.pi
                 surf_norm = np.array([cos(theta), sin(theta)])
         
-        elif imode == 2:
+        elif imode == "Sum Vector":
             # sub_mat_surf consists of 1(surf) and -1(surf_vac)
             # surf_vac is not used when imode == 2, zero out 1
             temp_sub_mat_surf = np.where(sub_mat_surf == 1, 0, sub_mat_surf)
