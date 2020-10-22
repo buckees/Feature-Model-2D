@@ -17,6 +17,7 @@ mesh = MESHGRID(width, height, res_x, res_z)
 print(mesh)
 mesh.mat_input()
 mesh.find_surf()
+mesh.find_surf_vac()
 # mesh.plot()
 
 rec_traj = [[] for i in range(num_ptcl)]
@@ -50,6 +51,7 @@ for k in range(num_ptcl):
             break
         hit_mat, hit_idx = mesh.hit_check(Arp.posn)
         if hit_mat:
+            print(Arp.posn, hit_idx)
             # record the hit point
             rec_traj[k].append(Arp.posn.copy())
             # at this position, th ptcl hits a mat
@@ -79,6 +81,7 @@ for k in range(num_ptcl):
                 mesh.update_mat(hit_idx, threshold)
                 mesh.find_float_cell()
                 mesh.find_surf()
+                mesh.find_surf_vac()
                 Arp.dead = 1
         # check if the ptcl is dead
         if Arp.dead:
@@ -86,8 +89,10 @@ for k in range(num_ptcl):
 
     rec_traj[k] = np.array(rec_traj[k]).T
 
+rec_surf = []
 for temp_idx in mesh.surf:
-    temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx)
+    temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx, radius=1,
+                                                 imode="Sum Vector")
     rec_surf.append([temp_idx, temp_svec])
 
 colMap = copy.copy(cm.Accent)
