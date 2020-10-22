@@ -306,14 +306,33 @@ if __name__ == '__main__':
     colMap = copy.copy(cm.get_cmap("Accent"))
     colMap.set_under(color='white')
 
+    rec_surf = []
+    for temp_idx in mesh.surf:
+        temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx)
+        rec_surf.append([temp_idx, temp_svec])
+
+    def plot_surf_norm(ax, posn, svec):
+        ax.quiver(posn[0], posn[1],
+                  svec[0], svec[1])
+
+
     fig, axes = plt.subplots(1, 2, figsize=(4, 8),
                              constrained_layout=True)
+    
     ax = axes[0]
-    ax.contourf(mesh.x, mesh.z, mesh.mat,
-                cmap=colMap, vmin=0.2, extend='both')
-    ax.quiver(temp_posn[1], temp_posn[0], surf_norm[0], surf_norm[1],
-              scale=5)
+    ax.contourf(mesh.x, mesh.z, mesh.mat, cmap=colMap, vmin=0.2, extend='both')
+    ax.set_xlim(0.0, mesh.width)
+    ax.set_ylim(0.0, mesh.height)
+    
     ax = axes[1]
-    ax.contourf(mesh.x, mesh.z, mesh.mat_surf,
-                cmap=colMap, vmin=0.2, extend='both')
-    plt.show(fig)
+    ax.scatter(mesh.x, mesh.z, c=mesh.mat, s=1, cmap=colMap, vmin=0.2)
+    ax.set_xlim(0.0, mesh.width)
+    ax.set_ylim(0.0, mesh.height)
+
+    for item in rec_surf:
+        temp_idx, temp_svec = item
+        temp_posn = np.array([mesh.x[temp_idx], mesh.z[temp_idx]])
+        plot_surf_norm(ax, temp_posn, temp_svec)
+    
+    plt.show()
+    fig.savefig('init.png', dpi=600)
