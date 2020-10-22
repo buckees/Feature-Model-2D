@@ -276,6 +276,15 @@ class MESHGRID(object):
             print(temp_sub_mat_surf)
             temp_vecx = np.multiply(self.x[idx] - sub_x, temp_sub_mat_surf)
             temp_vecz = np.multiply(self.z[idx] - sub_z, temp_sub_mat_surf)
+            # Calc the vector norm**2
+            temp_vec_norm = np.power(temp_vecx, 2) + np.power(temp_vecz, 2)
+            # The far from the idx, the smaller the weight. weight = 1/r
+            temp_vecx = np.divide(temp_vecx, temp_vec_norm, 
+                                  out=np.zeros_like(temp_vec_norm), 
+                                  where=temp_vec_norm!=0)
+            temp_vecz = np.divide(temp_vecz, temp_vec_norm,
+                                  out=np.zeros_like(temp_vec_norm), 
+                                  where=temp_vec_norm!=0)
             print(temp_vecz)
             temp_vecx = temp_vecx.sum()
             temp_vecz = temp_vecz.sum()
@@ -348,8 +357,9 @@ if __name__ == '__main__':
 
     rec_surf = []
     for temp_idx in mesh.surf:
-        # temp_idx = (224, 40)
+        # temp_idx = (224, 13)
         temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx, 
+                                                     radius=2,
                                                      imode='Sum Vector')
         rec_surf.append([temp_idx, temp_svec])
 
