@@ -116,26 +116,41 @@ class MESHGRID(object):
 
         # self.surf = np.array(surf).T
 
+    def find_surf_vac(self):
+        """Search for the surface nodes neighbors in vac."""
+        self.surf_vac = []
+        # search surface within materials
+        for j in range(1, self.nz-1):
+            for i in range(self.nx):
+                # if mat[i,j] is 0
+                if not self.mat[j, i]:
+                    # temp = sum all neighbours
+                    # temp != 0 means one of neighbours is surf node
+                    temp = self.mat[j, (i-1) % self.nx]
+                    temp += self.mat[j, (i+1) % self.nx]
+                    temp += self.mat[(j-1) % self.nz, i]
+                    temp += self.mat[(j+1) % self.nz, i]
+                    temp += self.mat[(j-1) % self.nz, (i-1) % self.nx]
+                    temp += self.mat[(j-1) % self.nz, (i+1) % self.nx]
+                    temp += self.mat[(j+1) % self.nz, (i-1) % self.nx]
+                    temp += self.mat[(j+1) % self.nz, (i+1) % self.nx]
+                    if temp:
+                        self.surf_vac.append((j, i))
+                        self.mat_surf[j, i] = -1
+
+
     def plot(self):
         """Plot mesh and surface."""
         colMap = copy.copy(cm.get_cmap("Accent"))
         colMap.set_under(color='white')
 
-        fig, axes = plt.subplots(1, 2, figsize=(4, 8),
+        fig, axes = plt.subplots(1, 2, figsize=(4, 8), dpi=600,
                                  constrained_layout=True)
         ax = axes[0]
-        ax.contourf(self.x, self.z, self.mat,
-                    cmap=colMap, vmin=0.2, extend='both')
+        ax.scatter(self.x, self.z, c=self.mat, s=1, cmap=colMap, vmin=0.2)
         ax = axes[1]
-        ax.contourf(self.x, self.z, self.mat_surf,
-                    cmap=colMap, vmin=0.2, extend='both')
-        # axes[1].plot(self.surf[1, :]*self.res_x,
-        #              self.surf[0, :]*self.res_z,
-        #              'o', )
-        # axes[1].set_xlim(0, self.width)
-        # axes[1].set_ylim(0, self.height)
-        plt.show()
-
+        ax.scatter(self.x, self.z, c=self.mat_surf, s=1)
+        
     def hit_check(self, posn):
         """
         Check wether a particle hits a material.
@@ -280,8 +295,9 @@ if __name__ == '__main__':
     mesh = MESHGRID(width, height, res_x, res_z)
     mesh.mat_input()
     mesh.find_surf()
+    mesh.find_surf_vac()
     mesh.plot()
-    temp_idx = tuple(mesh.surf[:, 1])
+    temp_idx = mesh.surf[1]
     print('idx=', temp_idx)
     surf_norm, theta = mesh.calc_surf_norm(temp_idx)
     print(surf_norm)
