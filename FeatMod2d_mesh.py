@@ -185,15 +185,23 @@ class MESHGRID(object):
         radius: the sub-domain where the surf norm is calc
         imode = 1: fitting plane to the surf sites within the sub-domain
                 2: sum the vector of hit site to vac sites 
-        Calc searching sub-domain in which the surface fits
+        
+        Search for the sub-domain in which the surface fits
+        imode = 1
         Calc cost function for surface fitting
         Calc the minimun cost function
         Calc the surface direction
         Calc the surface normal direction, rotate 90 or 270 degrees
         Calc surface normal vector
+        
+        imode = 2
+        Calc the vec from hit surf node to surf_vac nodes
+        Sum all the vec (weight can be specified)
+        Normal the vec
+        
         Output: surface normal vector and vector angle
         """
-        # Calc the sub-domain boundary
+        # Create the sub-domain boundary
         bottom = idx[0]-radius
         top = idx[0]+radius+1
         left = idx[1]-radius
@@ -208,36 +216,40 @@ class MESHGRID(object):
         if right > self.nx-1:
             right = self.nx-1
         # Construct the sub-domain
-        temp_mat_surf = self.mat_surf[bottom:top, left:right]
-        temp_x = self.x[bottom:top, left:right]
-        temp_z = self.z[bottom:top, left:right]
+        sub_mat_surf = self.mat_surf[bottom:top, left:right]
+        sub_x = self.x[bottom:top, left:right]
+        sub_z = self.z[bottom:top, left:right]
 
-        def cost_func_surf_norm(theta):
-            """Construct the cost func for surface fitting."""
-            A, B = -np.sin(theta), np.cos(theta)
-            C = A*self.x[idx] + B*self.z[idx]
-            Q = A*temp_x + B*temp_z - C
-            Q = np.multiply(Q, temp_mat_surf)
-            Qsum = -abs(Q.sum())
-            Q2 = np.power(Q, 2)
-            Qsum += Q2.sum()
-            return Qsum
-
-        min_norm = minimize(cost_func_surf_norm, np.pi/4)
-        # obtain the surface normal
-        theta = min_norm.x[0] + np.pi/2
-        surf_norm = np.array([cos(theta), sin(theta)])
-        temp_posn = np.array([self.x[idx], self.z[idx]])
-        temp_posn += np.sqrt(2)/2*radius*self.res*surf_norm
-        # Check boundaries
-        temp_posn[0] = np.clip(temp_posn[0], 0.0, self.width-self.res_x*1e-3)
-        temp_posn[1] = np.clip(temp_posn[1], 0.0, self.height-self.res_z*1e-3)
-        # make sure the surf_norm points out of material
-        temp_mat, temp_idx = self.hit_check(temp_posn)
-        if temp_mat:
-            theta += np.pi
+        if imode == 1:
+            def cost_func_surf_norm(theta):
+                """Construct the cost func for surface fitting."""
+                A, B = -np.sin(theta), np.cos(theta)
+                C = A*self.x[idx] + B*self.z[idx]
+                Q = A*sub_x + B*sub_z - C
+                Q = np.multiply(Q, sub_mat_surf)
+                Qsum = -abs(Q.sum())
+                Q2 = np.power(Q, 2)
+                Qsum += Q2.sum()
+                return Qsum
+    
+            min_norm = minimize(cost_func_surf_norm, np.pi/4)
+            # obtain the surface normal
+            theta = min_norm.x[0] + np.pi/2
             surf_norm = np.array([cos(theta), sin(theta)])
-
+            temp_posn = np.array([self.x[idx], self.z[idx]])
+            temp_posn += np.sqrt(2)/2*radius*self.res*surf_norm
+            # Check boundaries
+            temp_posn[0] = np.clip(temp_posn[0], 0.0, self.width-self.res_x*1e-3)
+            temp_posn[1] = np.clip(temp_posn[1], 0.0, self.height-self.res_z*1e-3)
+            # make sure the surf_norm points out of material
+            temp_mat, temp_idx = self.hit_check(temp_posn)
+            if temp_mat:
+                theta += np.pi
+                surf_norm = np.array([cos(theta), sin(theta)])
+        elif imode == 2:
+            for temp_mat_surf, temp_x, temp_z in zip(np.nditer(temp_))
+            pass
+        
         return surf_norm, theta
 
     def find_float_cell(self):
