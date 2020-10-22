@@ -177,7 +177,7 @@ class MESHGRID(object):
             if rnd < threshold:
                 self.mat[idx] = 0
 
-    def calc_surf_norm(self, idx, radius=1, imode="Fit Plane"):
+    def calc_surf_norm(self, idx, radius=1, imode="Fit Plane", bc='Periodic'):
         """
         Caculate surface normal.
 
@@ -206,19 +206,38 @@ class MESHGRID(object):
         top = idx[0]+radius+1
         left = idx[1]-radius
         right = idx[1]+radius+1
-        # cut sub-domain if it is out of main-domain
+        # cut sub-domain if it is out of main-domain vertically
         if bottom < 0:
             bottom = 0
         if top > self.nz-1:
             top = self.nz-1
+        # if left < 0:
+        #     left = 0
+        # if right > self.nx-1:
+        #     right = self.nx-1
+        # Construct the sub-domain, periodic b.c.
         if left < 0:
-            left = 0
-        if right > self.nx-1:
-            right = self.nx-1
-        # Construct the sub-domain
-        sub_mat_surf = self.mat_surf[bottom:top, left:right]
-        sub_x = self.x[bottom:top, left:right]
-        sub_z = self.z[bottom:top, left:right]
+            sub_mat_surf = np.concatenate((self.mat_surf[bottom:top, left:], 
+                           self.mat_surf[bottom:top, 0:right]), axis=1)
+            sub_x = np.concatenate((self.x[bottom:top, left:] - self.width, 
+                                    self.x[bottom:top, 0:right]), 
+                                   axis=1)
+            sub_z = np.concatenate((self.z[bottom:top, left:], 
+                                    self.z[bottom:top, 0:right]), axis=1)
+        elif right > self.nx-1:
+            right = right % self.nx
+            sub_mat_surf = np.concatenate((self.mat_surf[bottom:top, left:], 
+                           self.mat_surf[bottom:top, 0:right]), axis=1)
+            sub_x = np.concatenate((self.x[bottom:top, left:], 
+                                    self.x[bottom:top, 0:right] + self.width), 
+                                   axis=1)
+            sub_z = np.concatenate((self.z[bottom:top, left:], 
+                                    self.z[bottom:top, 0:right]), axis=1)
+        else:
+            sub_mat_surf = self.mat_surf[bottom:top, left:right]
+            sub_x = self.x[bottom:top, left:right]
+            sub_z = self.z[bottom:top, left:right]
+        # print(sub_mat_surf)
 
         if imode == "Fit Plane":
             # sub_mat_surf consists of 1(surf) and -1(surf_vac)
@@ -256,8 +275,8 @@ class MESHGRID(object):
             temp_sub_mat_surf = np.where(sub_mat_surf == 1, 0, sub_mat_surf)
             print(temp_sub_mat_surf)
             temp_vecx = np.multiply(self.x[idx] - sub_x, temp_sub_mat_surf)
-            print(temp_vecx)
             temp_vecz = np.multiply(self.z[idx] - sub_z, temp_sub_mat_surf)
+            print(temp_vecz)
             temp_vecx = temp_vecx.sum()
             temp_vecz = temp_vecz.sum()
             surf_norm = np.array([temp_vecx, temp_vecz])
@@ -329,7 +348,9 @@ if __name__ == '__main__':
 
     rec_surf = []
     for temp_idx in mesh.surf:
-        temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx)
+        # temp_idx = (224, 40)
+        temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx, 
+                                                     imode='Sum Vector')
         rec_surf.append([temp_idx, temp_svec])
 
     def plot_surf_norm(ax, posn, svec):
