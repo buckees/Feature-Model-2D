@@ -289,8 +289,13 @@ class MESHGRID(object):
             temp_vecx = temp_vecx.sum()
             temp_vecz = temp_vecz.sum()
             surf_norm = np.array([temp_vecx, temp_vecz])
-            surf_norm = surf_norm/np.linalg.norm(surf_norm)
-            theta = np.arccos(surf_norm)
+            temp_norm = np.linalg.norm(surf_norm)
+            if temp_norm:
+                surf_norm = surf_norm/np.linalg.norm(surf_norm)
+                theta = np.arccos(surf_norm)
+            else:
+                theta = np.random.uniform(-np.pi, np.pi)
+                surf_norm = np.array([sin(theta), -cos(theta)])
         
         return surf_norm, theta
 
@@ -359,7 +364,7 @@ if __name__ == '__main__':
     for temp_idx in mesh.surf:
         # temp_idx = (224, 13)
         temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx, 
-                                                     radius=2,
+                                                     radius=1,
                                                      imode='Sum Vector')
         rec_surf.append([temp_idx, temp_svec])
 
