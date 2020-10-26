@@ -201,6 +201,11 @@ class MESHGRID(object):
         
         Output: surface normal vector and vector angle
         """
+        # Check input
+        if imode in ['Fit Plane', 'Sum Vector']:
+            pass
+        else:
+            return print('Error')
         # Create the sub-domain boundary
         bottom = idx[0]-radius
         top = idx[0]+radius+1
@@ -364,8 +369,8 @@ if __name__ == '__main__':
     for temp_idx in mesh.surf:
         # temp_idx = (224, 13)
         temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx, 
-                                                     radius=1,
-                                                     imode='Sum Vector')
+                                                     radius=3,
+                                                     imode='Fit Plane')
         rec_surf.append([temp_idx, temp_svec])
 
     def plot_surf_norm(ax, posn, svec):
