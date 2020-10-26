@@ -52,20 +52,9 @@ class MESHGRID(object):
                    self.res_x, self.res_z,
                    self.nx, self.nz)
 
-    def mat_input(self):
+    def mat_input(self, materials):
         """Assign input materials to the mesh."""
         self.mater = ['Vac', 'SiO2', 'Si', 'PR']
-        materials = []
-        m = [('SiO2', 1), 'rect', (0.0, 0.0, 100.0, 50.0)]
-        materials.append(m)
-        m = [('Si', 2),   'rect', (0.0, 50.0, 100.0, 300.0)]
-        materials.append(m)
-        m = [('PR', 3),   'rect', (0.0, 350.0, 30.0, 100.0)]
-        materials.append(m)
-        m = [('PR', 3),   'rect', (70.0, 350.0, 30.0, 100.0)]
-        materials.append(m)
-        # m = [('Vac', 0),   'circ', (50.0, 350.0, 30.0)]
-        # materials.append(m)
 
         for material in materials:
             mater = material[0]
@@ -356,8 +345,9 @@ def rect_conv(coord, res_x, res_z):
 
 if __name__ == '__main__':
     from FeatMod2d_ops import width, height, res_x, res_z
+    from FeatMod2d_mat import materials
     mesh = MESHGRID(width, height, res_x, res_z)
-    mesh.mat_input()
+    mesh.mat_input(materials)
     mesh.find_surf()
     mesh.find_surf_vac()
     mesh.plot()
