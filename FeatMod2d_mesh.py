@@ -345,9 +345,9 @@ def rect_conv(coord, res_x, res_z):
 
 if __name__ == '__main__':
     from FeatMod2d_ops import width, height, res_x, res_z
-    from FeatMod2d_mat import materials
+    from FeatMod2d_mat import mat0, mat1
     mesh = MESHGRID(width, height, res_x, res_z)
-    mesh.mat_input(materials)
+    mesh.mat_input(mat1)
     mesh.find_surf()
     mesh.find_surf_vac()
     mesh.plot()
@@ -359,8 +359,8 @@ if __name__ == '__main__':
     for temp_idx in mesh.surf:
         # temp_idx = (224, 13)
         temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx, 
-                                                     radius=3,
-                                                     imode='Fit Plane')
+                                                     radius=1,
+                                                     imode='Sum Vector')
         rec_surf.append([temp_idx, temp_svec])
 
     def plot_surf_norm(ax, posn, svec):
