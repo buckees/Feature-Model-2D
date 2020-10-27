@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from scipy.optimize import minimize, least_squares
 
+from FeatMod2d_misc import isInsideTrgl
+
 
 class MESHGRID(object):
     """Mesh object."""
@@ -58,8 +60,14 @@ class MESHGRID(object):
 
         for material in materials:
             mater = material[0]
-            # print(mater)
             itype = material[1]
+            
+            # check itype error
+            if itype in ['rect', 'circ', 'trgl']:
+                pass
+            else:
+                return print('itype = %s is not found' % itype)
+            
             if itype == 'rect':
                 coord = material[2]
                 ncoord = rect_conv(coord, self.res_x, self.res_z)
@@ -73,6 +81,16 @@ class MESHGRID(object):
                         tempz = self.z[j, i]
                         tempd = (tempx - circ_x)**2 + (tempz - circ_z)**2
                         if tempd < circ_r**2:
+                            self.mat[j, i] = int(mater[1])
+                
+            if itype == 'trgl':
+                p1_x, p1_y, p2_x, p2_y, p3_x, p3_y = material[2]
+                for j in range(1, self.nz-1):
+                    for i in range(self.nx):
+                        tempx = self.x[j, i]
+                        tempz = self.z[j, i]
+                        if isInsideTrgl(p1_x, p1_y, p2_x, p2_y, p3_x, p3_y,
+                                        tempx, tempz):
                             self.mat[j, i] = int(mater[1])
 
     def find_surf(self):
@@ -345,9 +363,9 @@ def rect_conv(coord, res_x, res_z):
 
 if __name__ == '__main__':
     from FeatMod2d_ops import width, height, res_x, res_z
-    from FeatMod2d_mat import mat0, mat1
+    from FeatMod2d_mat import mat0, mat1, mat2
     mesh = MESHGRID(width, height, res_x, res_z)
-    mesh.mat_input(mat1)
+    mesh.mat_input(mat2)
     mesh.find_surf()
     mesh.find_surf_vac()
     mesh.plot()
@@ -359,8 +377,8 @@ if __name__ == '__main__':
     for temp_idx in mesh.surf:
         # temp_idx = (224, 13)
         temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx, 
-                                                     radius=1,
-                                                     imode='Sum Vector')
+                                                     radius=4,
+                                                     imode='Fit Plane')
         rec_surf.append([temp_idx, temp_svec])
 
     def plot_surf_norm(ax, posn, svec):
