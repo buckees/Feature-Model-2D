@@ -146,17 +146,18 @@ class MESHGRID(object):
                         self.mat_surf[j, i] = -1
 
 
-    def plot(self):
+    def plot(self, figsize=(8, 8), dpi=600, fname='demo.png'):
         """Plot mesh and surface."""
         colMap = copy.copy(cm.get_cmap("Accent"))
         colMap.set_under(color='white')
 
-        fig, axes = plt.subplots(1, 2, figsize=(8, 8), dpi=600,
+        fig, axes = plt.subplots(1, 2, figsize=figsize, dpi=dpi,
                                  constrained_layout=True)
         ax = axes[0]
         ax.scatter(self.x, self.z, c=self.mat, s=1, cmap=colMap, vmin=0.2)
         ax = axes[1]
         ax.scatter(self.x, self.z, c=self.mat_surf, s=1)
+        fig.savefig(fname, dpi=dpi)
         
     def hit_check(self, posn):
         """
