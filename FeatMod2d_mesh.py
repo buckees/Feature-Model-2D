@@ -151,7 +151,7 @@ class MESHGRID(object):
         colMap = copy.copy(cm.get_cmap("Accent"))
         colMap.set_under(color='white')
 
-        fig, axes = plt.subplots(1, 2, figsize=(4, 8), dpi=600,
+        fig, axes = plt.subplots(1, 2, figsize=(8, 8), dpi=600,
                                  constrained_layout=True)
         ax = axes[0]
         ax.scatter(self.x, self.z, c=self.mat, s=1, cmap=colMap, vmin=0.2)
@@ -363,9 +363,9 @@ def rect_conv(coord, res_x, res_z):
 
 if __name__ == '__main__':
     from FeatMod2d_ops import width, height, res_x, res_z
-    from FeatMod2d_mat import mat0, mat1, mat2
+    from FeatMod2d_mat import mat0, mat1, mat2, Si2d
     mesh = MESHGRID(width, height, res_x, res_z)
-    mesh.mat_input(mat2)
+    mesh.mat_input(Si2d)
     mesh.find_surf()
     mesh.find_surf_vac()
     mesh.plot()
@@ -386,7 +386,7 @@ if __name__ == '__main__':
                   svec[0], svec[1])
 
 
-    fig, axes = plt.subplots(1, 2, figsize=(4, 8),
+    fig, axes = plt.subplots(1, 2, figsize=(8, 8),
                              constrained_layout=True)
     
     ax = axes[0]
