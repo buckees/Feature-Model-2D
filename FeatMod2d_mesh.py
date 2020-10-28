@@ -95,34 +95,42 @@ class MESHGRID(object):
 
     def find_surf(self):
         """Search for the surface nodes."""
-        self.surf = []
+        self.surf, self.surf_vac = [], []
         self.mat_surf = np.zeros_like(self.mat).astype(int)
         # search surface within materials
         for j in range(1, self.nz-1):
             for i in range(self.nx):
                 # if mat[i,j] is not 0
                 if self.mat[j, i]:
-                    # temp = multiply all neighbours
-                    # temp = 0 means one of neighbours = 0
-                    temp = self.mat[j, (i-1) % self.nx] \
-                         * self.mat[j, (i+1) % self.nx] \
-                         * self.mat[(j-1) % self.nz, i] \
-                         * self.mat[(j+1) % self.nz, i] \
-                         * self.mat[(j-1) % self.nz, (i-1) % self.nx] \
-                         * self.mat[(j-1) % self.nz, (i+1) % self.nx] \
-                         * self.mat[(j+1) % self.nz, (i-1) % self.nx] \
-                         * self.mat[(j+1) % self.nz, (i+1) % self.nx]
-                    if not temp:
+                    # find surf nodes
+                    # tempa = multiply all neighbours
+                    # tempa = 0 means one of neighbours = 0
+                    tempa = self.mat[j, (i-1) % self.nx]
+                    tempa *= self.mat[j, (i+1) % self.nx]
+                    tempa *= self.mat[(j-1) % self.nz, i]
+                    tempa *= self.mat[(j+1) % self.nz, i]
+                    tempa *= self.mat[(j-1) % self.nz, (i-1) % self.nx]
+                    tempa *= self.mat[(j-1) % self.nz, (i+1) % self.nx]
+                    tempa *= self.mat[(j+1) % self.nz, (i-1) % self.nx]
+                    tempa *= self.mat[(j+1) % self.nz, (i+1) % self.nx]
+                    if not tempa:
                         self.surf.append((j, i))
                         self.mat_surf[j, i] = 1
-
-        # search for left and right boundaries
-#        for j in range(1, self.nz-1):
-#            for i in [0, self.nx-1]:
-#                if not self.mat[j,i]:
-#                    surf.append((j,i))
-
-        # self.surf = np.array(surf).T
+                else:    
+                    # find surf nodes in vac
+                    # tempb = sum all neighbours
+                    # tempb != 0 means one of neighbours is surf node
+                    tempb = self.mat[j, (i-1) % self.nx]
+                    tempb += self.mat[j, (i+1) % self.nx]
+                    tempb += self.mat[(j-1) % self.nz, i]
+                    tempb += self.mat[(j+1) % self.nz, i]
+                    tempb += self.mat[(j-1) % self.nz, (i-1) % self.nx]
+                    tempb += self.mat[(j-1) % self.nz, (i+1) % self.nx]
+                    tempb += self.mat[(j+1) % self.nz, (i-1) % self.nx]
+                    tempb += self.mat[(j+1) % self.nz, (i+1) % self.nx]
+                    if tempb:
+                        self.surf_vac.append((j, i))
+                        self.mat_surf[j, i] = -1
 
     def find_surf_vac(self):
         """Search for the surface nodes neighbors in vac."""
