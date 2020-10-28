@@ -3,7 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import copy
+from copy import copy, deepcopy
 
 from FeatMod2d_ops import width, height, res_x, res_z, num_ptcl, \
                           threshold, max_rflct
@@ -11,29 +11,35 @@ from FeatMod2d_mesh import MESHGRID
 # from FeatMod2d_ptcl import PARTICLE
 from Species import Arp
 from FeatMod2d_rflct import REFLECT
+from FeatMod2d_mat import Si2d
 
 # create mesh
 mesh = MESHGRID(width, height, res_x, res_z)
 print(mesh)
-mesh.mat_input()
+mesh.mat_input(Si2d)
 mesh.find_surf()
 mesh.find_surf_vac()
 # mesh.plot()
 
-rec_traj = [[] for i in range(num_ptcl)]
-rec_surf = []
+rec_traj, rec_surf, rec_mesh = [], [], []
 
-delta_L = min(res_x, res_z)*0.5
+# delta_L = min(res_x, res_z)*0.5
+delta_L = min(res_x, res_z)
 # Arp = PARTICLE('Ar+', 'Ion',  32.0,     1)
 
 Arp_rflct = REFLECT()
 
 for k in range(num_ptcl):
+    if (k + 1) % int(num_ptcl/5) == 0:
+        print(k)
+        rec_mesh.append(deepcopy(mesh.mat))
     Arp.dead = 0
     Arp.init_posn(width, height)
     # record initial position
-    rec_traj[k].append(Arp.posn.copy())
-    Arp.init_uvec('Normal')
+    if k > num_ptcl - 20:
+        rec_traj.append([])
+        rec_traj[-1].append(Arp.posn.copy())
+    Arp.init_uvec(['Uniform', -15.0, 15.0])
 #    Arp.init_plot()
 
     num_rflct = 0
@@ -47,13 +53,15 @@ for k in range(num_ptcl):
         # rec_traj[k].append(Arp.posn.copy())
         if Arp.dead:
             # record ptcl posn when dead
-            rec_traj[k].append(Arp.posn.copy())
+            if k > num_ptcl - 20:
+                rec_traj[-1].append(Arp.posn.copy())
             break
         hit_mat, hit_idx = mesh.hit_check(Arp.posn)
         if hit_mat:
-            print(Arp.posn, hit_idx)
+            # print(Arp.posn, hit_idx)
             # record the hit point
-            rec_traj[k].append(Arp.posn.copy())
+            if k > num_ptcl - 20:
+                rec_traj[-1].append(Arp.posn.copy())
             # at this position, th ptcl hits a mat
             # decide wehter a reflection or reaction
             mat_name = mesh.mater[hit_mat]
@@ -64,12 +72,13 @@ for k in range(num_ptcl):
                 if num_rflct > max_rflct:
                     Arp.dead = 1
                     # record ptcl posn when dead
-                    rec_traj[k].append(Arp.posn.copy())
+                    if k > num_ptcl - 20:
+                        rec_traj[-1].append(Arp.posn.copy())
                     break
                 # call reflection
                 Arp_rflct.svec, Arp_rflct.stheta = \
-                    mesh.calc_surf_norm(hit_idx, radius=2, imode='Sum Vector')
-                rec_surf.append([hit_idx, Arp_rflct.svec.copy()])
+                    mesh.calc_surf_norm(hit_idx, radius=4, imode='Sum Vector')
+                # rec_surf.append([hit_idx, Arp_rflct.svec.copy()])
                 # use only specular reflection
                 Arp.uvec = Arp_rflct.spec_rflct(Arp.uvec)
                 # Arp.uvec = Arp_rflct.rflct(Arp.uvec)
@@ -86,46 +95,55 @@ for k in range(num_ptcl):
         # check if the ptcl is dead
         if Arp.dead:
             break
-
-    rec_traj[k] = np.array(rec_traj[k]).T
+    if k > num_ptcl - 20:
+        rec_traj[-1] = np.array(rec_traj[-1]).T
 
 rec_surf = []
 for temp_idx in mesh.surf:
-    temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx, radius=2,
+    temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx, radius=4,
                                                  imode="Sum Vector")
     rec_surf.append([temp_idx, temp_svec])
 
-colMap = copy.copy(cm.Accent)
+colMap = copy(cm.Accent)
 colMap.set_under(color='white')
 
 def plot_traj(ax, traj):
-    for i in range(10):
-        ax.plot(traj[num_ptcl - i - 1][0, :], traj[num_ptcl - i - 1][1, :],
+    # for i in range(10):
+    #     ax.plot(traj[num_ptcl - i - 1][0, :], traj[num_ptcl - i - 1][1, :],
+    #             marker='o', markersize=0.3, linestyle='-', linewidth=0.1)
+    for temp_ptcl in traj:
+        ax.plot(temp_ptcl[0, :], temp_ptcl[1, :],
                 marker='o', markersize=0.3, linestyle='-', linewidth=0.1)
 
 def plot_surf_norm(ax, posn, svec):
     ax.quiver(posn[0], posn[1],
-              svec[0], svec[1])
+              svec[0], svec[1], 
+              # scale=50, units='xy',
+              # headwidth=1, headlength=1, lw=0.01, edgecolors='k',
+              width=0.001)
 
 
-fig, axes = plt.subplots(1, 2, figsize=(4, 8),
-                         constrained_layout=True)
+def plot_mesh(mat, ith):
+    fig, axes = plt.subplots(1, 2, figsize=(16, 8),
+                             constrained_layout=True)
+    
+    ax = axes[0]
+    ax.contourf(mesh.x, mesh.z, mat, cmap=colMap, vmin=0.2, extend='both')
+    ax.set_xlim(0.0, mesh.width)
+    ax.set_ylim(0.0, mesh.height)
+    plot_traj(ax, rec_traj)
+    
+    ax = axes[1]
+    ax.scatter(mesh.x, mesh.z, c=mat, s=1, cmap=colMap, vmin=0.2)
+    ax.set_xlim(0.0, mesh.width)
+    ax.set_ylim(0.0, mesh.height)
+    plot_traj(ax, rec_traj)
+    for item in rec_surf:
+        temp_idx, temp_svec = item
+        temp_posn = np.array([mesh.x[temp_idx], mesh.z[temp_idx]])
+        plot_surf_norm(ax, temp_posn, temp_svec)
+    
+    fig.savefig('mat_%d.png' % ith, dpi=600)
 
-ax = axes[0]
-ax.contourf(mesh.x, mesh.z, mesh.mat, cmap=colMap, vmin=0.2, extend='both')
-ax.set_xlim(0.0, mesh.width)
-ax.set_ylim(0.0, mesh.height)
-plot_traj(ax, rec_traj)
-
-ax = axes[1]
-ax.scatter(mesh.x, mesh.z, c=mesh.mat, s=1, cmap=colMap, vmin=0.2)
-ax.set_xlim(0.0, mesh.width)
-ax.set_ylim(0.0, mesh.height)
-plot_traj(ax, rec_traj)
-for item in rec_surf:
-    temp_idx, temp_svec = item
-    temp_posn = np.array([mesh.x[temp_idx], mesh.z[temp_idx]])
-    plot_surf_norm(ax, temp_posn, temp_svec)
-
-plt.show()
-fig.savefig('etching_demo.png', dpi=600)
+for ith, mat in enumerate(rec_mesh):
+    plot_mesh(mat, ith+1)
