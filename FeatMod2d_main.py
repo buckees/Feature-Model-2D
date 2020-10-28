@@ -18,7 +18,6 @@ mesh = MESHGRID(width, height, res_x, res_z)
 print(mesh)
 mesh.mat_input(Si2d)
 mesh.find_surf()
-mesh.find_surf_vac()
 # mesh.plot()
 
 delta_L = min(res_x, res_z)*0.5
@@ -87,7 +86,6 @@ for k in range(num_ptcl):
                 mesh.update_mat(hit_idx, threshold)
                 mesh.find_float_cell()
                 mesh.find_surf()
-                mesh.find_surf_vac()
                 Arp.dead = 1
         # check if the ptcl is dead
         if Arp.dead:
