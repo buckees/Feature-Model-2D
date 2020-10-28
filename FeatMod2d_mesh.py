@@ -132,30 +132,6 @@ class MESHGRID(object):
                         self.surf_vac.append((j, i))
                         self.mat_surf[j, i] = -1
 
-    def find_surf_vac(self):
-        """Search for the surface nodes neighbors in vac."""
-        self.surf_vac = []
-        self.mat_surf = np.zeros_like(self.mat).astype(int)
-        # search surface within materials
-        for j in range(1, self.nz-1):
-            for i in range(self.nx):
-                # if mat[i,j] is 0
-                if not self.mat[j, i]:
-                    # temp = sum all neighbours
-                    # temp != 0 means one of neighbours is surf node
-                    temp = self.mat[j, (i-1) % self.nx]
-                    temp += self.mat[j, (i+1) % self.nx]
-                    temp += self.mat[(j-1) % self.nz, i]
-                    temp += self.mat[(j+1) % self.nz, i]
-                    temp += self.mat[(j-1) % self.nz, (i-1) % self.nx]
-                    temp += self.mat[(j-1) % self.nz, (i+1) % self.nx]
-                    temp += self.mat[(j+1) % self.nz, (i-1) % self.nx]
-                    temp += self.mat[(j+1) % self.nz, (i+1) % self.nx]
-                    if temp:
-                        self.surf_vac.append((j, i))
-                        self.mat_surf[j, i] = -1
-
-
     def plot(self, figsize=(8, 8), dpi=600, fname='demo.png'):
         """Plot mesh and surface."""
         colMap = copy.copy(cm.get_cmap("Accent"))
