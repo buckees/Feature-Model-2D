@@ -96,6 +96,7 @@ class MESHGRID(object):
     def find_surf(self):
         """Search for the surface nodes."""
         self.surf = []
+        self.mat_surf = np.zeros_like(self.mat).astype(int)
         # search surface within materials
         for j in range(1, self.nz-1):
             for i in range(self.nx):
@@ -126,6 +127,7 @@ class MESHGRID(object):
     def find_surf_vac(self):
         """Search for the surface nodes neighbors in vac."""
         self.surf_vac = []
+        self.mat_surf = np.zeros_like(self.mat).astype(int)
         # search surface within materials
         for j in range(1, self.nz-1):
             for i in range(self.nx):
