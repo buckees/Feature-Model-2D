@@ -20,7 +20,7 @@ class REFLECT(object):
         if self.mat == 'PR':
             self.prob = 1.0
         elif self.mat == 'Si':
-            self.prob = 0.9
+            self.prob = 0.0
         return self.prob
 
     def rflct(self, ivec, erg=1.0):
