@@ -21,8 +21,8 @@ mesh.find_surf()
 mesh.find_surf_vac()
 # mesh.plot()
 
-# delta_L = min(res_x, res_z)*0.5
-delta_L = min(res_x, res_z)
+delta_L = min(res_x, res_z)*0.5
+# delta_L = min(res_x, res_z)
 # particle is imported from species
 # Arp = PARTICLE('Ar+', 'Ion',  32.0,     1)
 Arp_rflct = REFLECT()
@@ -34,7 +34,7 @@ for k in range(num_ptcl):
     if (k + 1) % int(num_ptcl/5) == 0:
         print('%d particles are launched!' % (k+1))
         mesh.plot(dpi=300, fname='nptcl=%d.png' % (k+1))
-        rec_mesh.append(deepcopy(mesh.mat))
+        # rec_mesh.append(deepcopy(mesh.mat))
     Arp.dead = 0
     Arp.init_posn(width, height)
     # record initial position
