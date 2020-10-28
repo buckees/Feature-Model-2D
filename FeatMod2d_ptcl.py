@@ -34,21 +34,26 @@ class PARTICLE(object):
         init_posx = np.random.uniform(0.0, 1.0)*width
         self.posn = np.array([init_posx, height])
 
-    def init_uvec(self, idstrb='Uniform'):
+    def init_uvec(self, idstrb=['Uniform', -90.0, 90.0]):
         """
         Initialize the velocity direction.
 
         in (x, -z) (half-down quadrant).
         """
-        if idstrb == 'Uniform':
-            theta = np.random.uniform(-np.pi/2.0, np.pi/2.0)
-        elif idstrb == 'Normal':
-            mu, sigma = 0, 0.1  # mean and standard deviation
+        itype = idstrb[0]
+        if itype == 'Uniform':
+            left, right = idstrb[1]/180.0*np.pi, idstrb[2]/180.0*np.pi
+            theta = np.random.uniform(left, right)
+        elif itype == 'Normal':
+            mu, sigma = 0.0, 0.1  # default mean and standard deviation
+            mu, sigma = idstrb[1], idstrb[2]
             theta = np.random.normal(mu, sigma)
-        elif idstrb == 'Cosine':
-            theta = cosine.rvs(scale=np.pi/2.0, size=1)
-        elif idstrb == 'Mono':
-            theta = np.pi/4
+        elif itype == 'Cosine':
+            scale = idstrb[1]/180.0*np.pi
+            theta = cosine.rvs(scale=scale, size=1)
+        elif itype == 'Mono':
+            theta = 0.0
+            theta = idstrb[1]/180.0*np.pi
 
         self.uvec = np.array([math.sin(theta), -math.cos(theta)])
 
