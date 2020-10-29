@@ -12,3 +12,19 @@ max_rflct = -1
 
 # reaction informaiton
 threshold = 1.0
+
+# init uvec distribution
+idstrb = ['Uniform3D', -45.0, 45.0]
+
+# boundary condition
+ibc = 'periodic'
+
+# step length factor
+step_fac = 0.5
+
+# max steps for a single particle
+max_step = 1000
+
+# surf norm calc
+surf_norm_range = 4
+surf_norm_mode = 'Sum Vector'

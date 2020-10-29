@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from copy import copy, deepcopy
 
-from FeatMod2d_ops import width, height, res_x, res_z, num_ptcl, \
-                          threshold, max_rflct
+from FeatMod2d_ops import (width, height, res_x, res_z, num_ptcl, ibc, 
+                          threshold, max_rflct, idstrb, step_fac, max_step)
 from FeatMod2d_mesh import MESHGRID
 # from FeatMod2d_ptcl import PARTICLE
 from Species import Arp
@@ -20,7 +20,7 @@ mesh.mat_input(Si2d)
 mesh.find_surf()
 # mesh.plot()
 
-delta_L = min(res_x, res_z)*0.5
+delta_L = min(res_x, res_z)*step_fac
 # delta_L = min(res_x, res_z)
 # particle is imported from species
 # Arp = PARTICLE('Ar+', 'Ion',  32.0,     1)
@@ -40,15 +40,15 @@ for k in range(num_ptcl):
     if k > num_ptcl - 20:
         rec_traj.append([])
         rec_traj[-1].append(Arp.posn.copy())
-    Arp.init_uvec(['Uniform', -15.0, 15.0])
+    Arp.init_uvec(idistrb)
 
     num_rflct = 0
 #    while imove_ptcl == 1 and num_rflct < 5:
-    for i in range(10000):
+    for i in range(max_step):
         # advance the ptcl by delta_L
         Arp.move_ptcl(delta_L)
         # periodic b.c. at left and right bdry
-        Arp.bdry_check(mesh.width, mesh.height, 'periodic')
+        Arp.bdry_check(mesh.width, mesh.height, ibc)
         # check if the ptcl is dead
         if Arp.dead:
             # record ptcl posn when dead
@@ -64,7 +64,8 @@ for k in range(num_ptcl):
             mat_name = mesh.mater[hit_mat]
             # calc surf norm
             Arp_rflct.svec, Arp_rflct.stheta = \
-                mesh.calc_surf_norm(hit_idx, radius=4, imode='Sum Vector')
+                mesh.calc_surf_norm(hit_idx, radius=surf_norm_range, 
+                                    imode=surf_norm_mode)
             # decide wehter a reflection or reaction
             rnd = np.random.uniform(0.0, 1.0)
             rflct = REFLECT(Arp.name, mat_name, 1.0)
@@ -100,8 +101,9 @@ for k in range(num_ptcl):
 
 # rec_surf = []
 # for temp_idx in mesh.surf:
-#     temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx, radius=4,
-#                                                  imode='Sum Vector')
+#     temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx, 
+#                                                  radius=surf_norm_range, 
+#                                                  imode=surf_norm_mode)
 #     rec_surf.append([temp_idx, temp_svec])
 
 # colMap = copy(cm.Accent)

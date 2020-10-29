@@ -1,21 +1,20 @@
 """Feature Model 2D. Main program."""
 
-import numpy as np
-from FeatMod2d_ops import width, height, res_x, res_z, num_ptcl, \
-                          threshold, max_rflct
+# import numpy as np
+from FeatMod2d_ops import (width, height, res_x, res_z, num_ptcl, ibc, 
+                          threshold, max_rflct, idstrb, step_fac, max_step)
 from FeatMod2d_mesh import MESHGRID
 # from FeatMod2d_ptcl import PARTICLE
 from Species import Arp
 from FeatMod2d_mat import Si2d
 
 # create mesh
-res_x, res_z = 0.5, 0.5
 mesh = MESHGRID(width, height, res_x, res_z)
 print(mesh)
 mesh.mat_input(Si2d)
 mesh.find_surf()
 
-delta_L = min(res_x, res_z)*0.5
+delta_L = min(res_x, res_z)*step_fac
 
 for k in range(num_ptcl):
     # print in process
@@ -25,15 +24,15 @@ for k in range(num_ptcl):
 
     Arp.dead = 0
     Arp.init_posn(width, height)
-    Arp.init_uvec(['Uniform3D', -45.0, 45.0])
+    Arp.init_uvec(idstrb)
     # Arp.init_uvec(['Mono', 15.0])
     num_rflct = 0
 
-    for i in range(10000):
+    for i in range(max_step):
         # advance the ptcl by delta_L
         Arp.move_ptcl(delta_L)
         # periodic b.c. at left and right bdry
-        Arp.bdry_check(mesh.width, mesh.height, 'periodic')
+        Arp.bdry_check(mesh.width, mesh.height, ibc)
         # check if the ptcl is dead
         if Arp.dead:
             break
