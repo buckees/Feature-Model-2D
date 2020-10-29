@@ -1,7 +1,7 @@
 """Feature Model 2D. Partile file."""
 
 import numpy as np
-import math
+from math import cos, sin, sqrt, acos
 import matplotlib.pyplot as plt
 from scipy.stats import cosine
 
@@ -41,9 +41,19 @@ class PARTICLE(object):
         in (x, -z) (half-down quadrant).
         """
         itype = idstrb[0]
-        if itype == 'Uniform':
+        if itype == 'Uniform2D':
             left, right = idstrb[1]/180.0*np.pi, idstrb[2]/180.0*np.pi
             theta = np.random.uniform(left, right)
+        elif itype == 'Uniform3D':
+            left, right = idstrb[1]/180.0*np.pi, idstrb[2]/180.0*np.pi
+            temp_th = np.random.uniform(left, right)
+            temp_phi = np.random.uniform(-np.pi, np.pi)
+            temp_vz = cos(temp_th)
+            temp_vx = sin(temp_th)*cos(temp_phi)
+            # temp_vy = sin(temp_th)*sin(temp_phi)
+            temp_v = sqrt(temp_vz**2 + temp_vx**2)
+            temp_vz = temp_vz/temp_v
+            theta = acos(temp_vz)*np.sign(sin(temp_phi))
         elif itype == 'Normal':
             mu, sigma = 0.0, 0.1  # default mean and standard deviation
             mu, sigma = idstrb[1], idstrb[2]
@@ -52,10 +62,9 @@ class PARTICLE(object):
             scale = idstrb[1]/180.0*np.pi
             theta = cosine.rvs(scale=scale, size=1)
         elif itype == 'Mono':
-            theta = 0.0
             theta = idstrb[1]/180.0*np.pi
 
-        self.uvec = np.array([math.sin(theta), -math.cos(theta)])
+        self.uvec = np.array([sin(theta), -cos(theta)])
 
     def init_enrg(self, idstrb='Uniform',
                   enrg_min=1e-2, enrg_max=1e4):
@@ -108,16 +117,12 @@ class PARTICLE(object):
 
 
 if __name__ == '__main__':
-    from FeatMod2d_ops import width, height, res_x, res_z
-    Arp = PARTICLE('Ar+', 'Ion',  32.0,     1)
-    print(Arp)
-    Arp.init_posn(width, height)
-    Arp.init_uvec()
-    Arp.init_enrg()
-    print("initial energy = %.2f eV" % Arp.enrg)
-    Arp.init_plot()
-
-    delta_L = min(res_x, res_z)
+    from Species import Arp
+    fig = plt.figure()
     for i in range(100):
-        Arp.move_ptcl(delta_L)
-    Arp.init_plot()
+        Arp.init_uvec(['Uniform3D', -45.0, 45.0])
+        vec = Arp.uvec
+        plt.scatter(vec[0], vec[1])
+    plt.show()
+        
+    
