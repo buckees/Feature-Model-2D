@@ -2,7 +2,8 @@
 
 # import numpy as np
 from FeatMod2d_ops import (width, height, res_x, res_z, num_ptcl, ibc, 
-                          threshold, max_rflct, idstrb, step_fac, max_step)
+                          threshold, max_rflct, idstrb, step_fac, max_step,
+                          num_plot)
 from FeatMod2d_mesh import MESHGRID
 # from FeatMod2d_ptcl import PARTICLE
 from Species import Arp
@@ -18,7 +19,7 @@ delta_L = min(res_x, res_z)*step_fac
 
 for k in range(num_ptcl):
     # print in process
-    if (k + 1) % int(num_ptcl/5) == 0:
+    if (k + 1) % int(num_ptcl/num_plot) == 0:
         print('%d particles are launched!' % (k+1))
         mesh.plot(dpi=300, fname='nptcl=%d.png' % (k+1))
 
