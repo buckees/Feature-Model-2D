@@ -131,6 +131,51 @@ class MESHGRID(object):
                     if tempb:
                         self.surf_vac.append((j, i))
                         self.mat_surf[j, i] = -1
+    
+    def update_surf(self, idx, radius=2):
+        """
+        Search for the surface nodes.
+        
+        Using find_surf() results in high computational cost.
+        Therefore, only the neighbors of the changed node is re-searched.
+        """
+        idx_j, idx_i = idx
+        for j in range(idx_j-radius, idx_j+radius+1):
+            for i in range(idx_i-radius, idx_i+radius+1):
+        # for j in range(1, self.nz-1):
+        #     for i in range(self.nx):
+                self.mat_surf[j, i] = 0
+                # if mat[i,j] is not 0
+                if self.mat[j, i]:
+                    # find surf nodes
+                    # tempa = multiply all neighbours
+                    # tempa = 0 means one of neighbours = 0
+                    tempa = self.mat[j, (i-1) % self.nx]
+                    tempa *= self.mat[j, (i+1) % self.nx]
+                    tempa *= self.mat[(j-1) % self.nz, i]
+                    tempa *= self.mat[(j+1) % self.nz, i]
+                    tempa *= self.mat[(j-1) % self.nz, (i-1) % self.nx]
+                    tempa *= self.mat[(j-1) % self.nz, (i+1) % self.nx]
+                    tempa *= self.mat[(j+1) % self.nz, (i-1) % self.nx]
+                    tempa *= self.mat[(j+1) % self.nz, (i+1) % self.nx]
+                    if not tempa:
+                        # self.surf.append((j, i))
+                        self.mat_surf[j, i] = 1
+                else:    
+                    # find surf nodes in vac
+                    # tempb = sum all neighbours
+                    # tempb != 0 means one of neighbours is surf node
+                    tempb = self.mat[j, (i-1) % self.nx]
+                    tempb += self.mat[j, (i+1) % self.nx]
+                    tempb += self.mat[(j-1) % self.nz, i]
+                    tempb += self.mat[(j+1) % self.nz, i]
+                    tempb += self.mat[(j-1) % self.nz, (i-1) % self.nx]
+                    tempb += self.mat[(j-1) % self.nz, (i+1) % self.nx]
+                    tempb += self.mat[(j+1) % self.nz, (i-1) % self.nx]
+                    tempb += self.mat[(j+1) % self.nz, (i+1) % self.nx]
+                    if tempb:
+                        # self.surf_vac.append((j, i))
+                        self.mat_surf[j, i] = -1
 
     def plot(self, figsize=(8, 8), dpi=600, fname='demo.png'):
         """Plot mesh and surface."""
