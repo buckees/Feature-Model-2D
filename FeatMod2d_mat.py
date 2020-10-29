@@ -56,7 +56,7 @@ Si2d.append(m)
 m = [('Vac', 0),   'trgl', (70.0, 225.0, 70.0, 250.0, 80.0, 250.0)]
 Si2d.append(m)
 
-# Si2d is designed to verify the code with MCFPM
+# Si2d_trench is designed to verify the bottom reflection
 Si2d_trench = Si2d.copy()
 m = [('Vac', 0),   'rect', (30.0, 25.0, 40.0, 200.0)]
 Si2d_trench.append(m)
