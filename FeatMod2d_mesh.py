@@ -38,8 +38,8 @@ class MESHGRID(object):
         # note that the shape of self.mat is (nz, nx)
         self.mat = np.zeros_like(self.x).astype(int)
         # construct a mat-like matrix for surface
-        # mat_surf = 1 if a surface node; 0 if not.
-        self.mat_surf = np.zeros_like(self.mat).astype(int)
+        # surf = 1 if a surface node; 0 if not.
+        self.surf = np.zeros_like(self.mat).astype(int)
         self.mater = []  # materials name <--> materails No.
 
     def __str__(self):
@@ -95,7 +95,7 @@ class MESHGRID(object):
     def find_surf(self):
         """Search for the surface nodes."""
         self.surf, self.surf_vac = [], []
-        self.mat_surf = np.zeros_like(self.mat).astype(int)
+        self.surf = np.zeros_like(self.mat).astype(int)
         # search surface within materials
         for j in range(1, self.nz-1):
             for i in range(self.nx):
@@ -113,7 +113,7 @@ class MESHGRID(object):
                     tempa *= self.mat[(j+1) % self.nz, (i-1) % self.nx]
                     tempa *= self.mat[(j+1) % self.nz, (i+1) % self.nx]
                     if not tempa:
-                        self.mat_surf[j, i] = 1
+                        self.surf[j, i] = 1
                 else:    
                     # find surf nodes in vac
                     # tempb = sum all neighbours
@@ -127,7 +127,7 @@ class MESHGRID(object):
                     tempb += self.mat[(j+1) % self.nz, (i-1) % self.nx]
                     tempb += self.mat[(j+1) % self.nz, (i+1) % self.nx]
                     if tempb:
-                        self.mat_surf[j, i] = -1
+                        self.surf[j, i] = -1
     
     def update_surf(self, idx, radius=2):
         """
@@ -141,7 +141,7 @@ class MESHGRID(object):
             for i in range(idx_i-radius, idx_i+radius+1):
         # for j in range(1, self.nz-1):
         #     for i in range(self.nx):
-                self.mat_surf[j, i] = 0
+                self.surf[j, i] = 0
                 # if mat[i,j] is not 0
                 if self.mat[j, i]:
                     # find surf nodes
@@ -156,7 +156,7 @@ class MESHGRID(object):
                     tempa *= self.mat[(j+1) % self.nz, (i-1) % self.nx]
                     tempa *= self.mat[(j+1) % self.nz, (i+1) % self.nx]
                     if not tempa:
-                        self.mat_surf[j, i] = 1
+                        self.surf[j, i] = 1
                 else:    
                     # find surf nodes in vac
                     # tempb = sum all neighbours
@@ -170,7 +170,7 @@ class MESHGRID(object):
                     tempb += self.mat[(j+1) % self.nz, (i-1) % self.nx]
                     tempb += self.mat[(j+1) % self.nz, (i+1) % self.nx]
                     if tempb:
-                        self.mat_surf[j, i] = -1
+                        self.surf[j, i] = -1
 
     def plot(self, figsize=(8, 8), dpi=600, fname='demo.png'):
         """Plot mesh and surface."""
@@ -182,7 +182,7 @@ class MESHGRID(object):
         ax = axes[0]
         ax.scatter(self.x, self.z, c=self.mat, s=1, cmap=colMap, vmin=0.2)
         ax = axes[1]
-        ax.scatter(self.x, self.z, c=self.mat_surf, s=1)
+        ax.scatter(self.x, self.z, c=self.surf, s=1)
         fig.savefig(fname, dpi=dpi)
         
     def hit_check(self, posn):
@@ -256,8 +256,8 @@ class MESHGRID(object):
         #     right = self.nx-1
         # Construct the sub-domain, periodic b.c.
         if left < 0:
-            sub_mat_surf = np.concatenate((self.mat_surf[bottom:top, left:], 
-                           self.mat_surf[bottom:top, 0:right]), axis=1)
+            sub_surf = np.concatenate((self.surf[bottom:top, left:], 
+                           self.surf[bottom:top, 0:right]), axis=1)
             sub_x = np.concatenate((self.x[bottom:top, left:] - self.width, 
                                     self.x[bottom:top, 0:right]), 
                                    axis=1)
@@ -265,29 +265,29 @@ class MESHGRID(object):
                                     self.z[bottom:top, 0:right]), axis=1)
         elif right > self.nx-1:
             right = right % self.nx
-            sub_mat_surf = np.concatenate((self.mat_surf[bottom:top, left:], 
-                           self.mat_surf[bottom:top, 0:right]), axis=1)
+            sub_surf = np.concatenate((self.surf[bottom:top, left:], 
+                           self.surf[bottom:top, 0:right]), axis=1)
             sub_x = np.concatenate((self.x[bottom:top, left:], 
                                     self.x[bottom:top, 0:right] + self.width), 
                                    axis=1)
             sub_z = np.concatenate((self.z[bottom:top, left:], 
                                     self.z[bottom:top, 0:right]), axis=1)
         else:
-            sub_mat_surf = self.mat_surf[bottom:top, left:right]
+            sub_surf = self.surf[bottom:top, left:right]
             sub_x = self.x[bottom:top, left:right]
             sub_z = self.z[bottom:top, left:right]
-        # print(sub_mat_surf)
+        # print(sub_surf)
 
         if imode == "Fit Plane":
-            # sub_mat_surf consists of 1(surf) and -1(surf_vac)
+            # sub_surf consists of 1(surf) and -1(surf_vac)
             # surf_vac is not used when imode == 1, zero out -1
-            temp_sub_mat_surf = np.where(sub_mat_surf == -1, 0, sub_mat_surf)
+            temp_sub_surf = np.where(sub_surf == -1, 0, sub_surf)
             def cost_func_surf_norm(theta):
                 """Construct the cost func for surface fitting."""
                 A, B = -np.sin(theta), np.cos(theta)
                 C = A*self.x[idx] + B*self.z[idx]
                 Q = A*sub_x + B*sub_z - C
-                Q = np.multiply(Q, temp_sub_mat_surf)
+                Q = np.multiply(Q, temp_sub_surf)
                 Qsum = -abs(Q.sum())
                 Q2 = np.power(Q, 2)
                 Qsum += Q2.sum()
@@ -309,12 +309,12 @@ class MESHGRID(object):
                 surf_norm = np.array([cos(theta), sin(theta)])
         
         elif imode == "Sum Vector":
-            # sub_mat_surf consists of 1(surf) and -1(surf_vac)
+            # sub_surf consists of 1(surf) and -1(surf_vac)
             # surf_vac is not used when imode == 2, zero out 1
-            temp_sub_mat_surf = np.where(sub_mat_surf == 1, 0, sub_mat_surf)
-            # print(temp_sub_mat_surf)
-            temp_vecx = np.multiply(self.x[idx] - sub_x, temp_sub_mat_surf)
-            temp_vecz = np.multiply(self.z[idx] - sub_z, temp_sub_mat_surf)
+            temp_sub_surf = np.where(sub_surf == 1, 0, sub_surf)
+            # print(temp_sub_surf)
+            temp_vecx = np.multiply(self.x[idx] - sub_x, temp_sub_surf)
+            temp_vecz = np.multiply(self.z[idx] - sub_z, temp_sub_surf)
             # Calc the vector norm**2
             temp_vec_norm = np.power(temp_vecx, 2) + np.power(temp_vecz, 2)
             # The far from the idx, the smaller the weight. weight = 1/r
