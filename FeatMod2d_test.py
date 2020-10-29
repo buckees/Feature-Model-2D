@@ -24,7 +24,8 @@ for k in range(num_ptcl):
 
     Arp.dead = 0
     Arp.init_posn(width, height)
-    Arp.init_uvec(['Uniform', -15.0, 15.0])
+    Arp.init_uvec(['Uniform3D', -45.0, 45.0])
+    # Arp.init_uvec(['Mono', 15.0])
     num_rflct = 0
 
     for i in range(10000):
