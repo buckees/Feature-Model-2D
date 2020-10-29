@@ -5,7 +5,7 @@ width, height = 100.0, 260.0  # nm
 res_x, res_z = 1.0, 1.0  # nm
 
 # particle information
-num_ptcl = 100000
+num_ptcl = 1000
 
 # reflection information
 max_rflct = -1
@@ -28,3 +28,6 @@ max_step = 1000
 # surf norm calc
 surf_norm_range = 4
 surf_norm_mode = 'Sum Vector'
+
+# diagnostics
+num_plot = 5
