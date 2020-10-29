@@ -13,6 +13,7 @@ res_x, res_z = 0.5, 0.5
 mesh = MESHGRID(width, height, res_x, res_z)
 print(mesh)
 mesh.mat_input(Si2d)
+mesh.find_surf()
 
 delta_L = min(res_x, res_z)*0.5
 
@@ -44,6 +45,7 @@ for k in range(num_ptcl):
             if mat_name == 'Si':
                 # now ireact = 1
                 mesh.mat[hit_idx] = 0
+                mesh.update_surf(hit_idx)
                 
         # check if the ptcl is dead
         if Arp.dead:
