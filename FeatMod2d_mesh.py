@@ -40,7 +40,6 @@ class MESHGRID(object):
         # construct a mat-like matrix for surface
         # mat_surf = 1 if a surface node; 0 if not.
         self.mat_surf = np.zeros_like(self.mat).astype(int)
-        self.surf = np.array([])  # surface node
         self.mater = []  # materials name <--> materails No.
 
     def __str__(self):
@@ -114,7 +113,6 @@ class MESHGRID(object):
                     tempa *= self.mat[(j+1) % self.nz, (i-1) % self.nx]
                     tempa *= self.mat[(j+1) % self.nz, (i+1) % self.nx]
                     if not tempa:
-                        self.surf.append((j, i))
                         self.mat_surf[j, i] = 1
                 else:    
                     # find surf nodes in vac
@@ -129,7 +127,6 @@ class MESHGRID(object):
                     tempb += self.mat[(j+1) % self.nz, (i-1) % self.nx]
                     tempb += self.mat[(j+1) % self.nz, (i+1) % self.nx]
                     if tempb:
-                        self.surf_vac.append((j, i))
                         self.mat_surf[j, i] = -1
     
     def update_surf(self, idx, radius=2):
@@ -159,7 +156,6 @@ class MESHGRID(object):
                     tempa *= self.mat[(j+1) % self.nz, (i-1) % self.nx]
                     tempa *= self.mat[(j+1) % self.nz, (i+1) % self.nx]
                     if not tempa:
-                        # self.surf.append((j, i))
                         self.mat_surf[j, i] = 1
                 else:    
                     # find surf nodes in vac
@@ -174,7 +170,6 @@ class MESHGRID(object):
                     tempb += self.mat[(j+1) % self.nz, (i-1) % self.nx]
                     tempb += self.mat[(j+1) % self.nz, (i+1) % self.nx]
                     if tempb:
-                        # self.surf_vac.append((j, i))
                         self.mat_surf[j, i] = -1
 
     def plot(self, figsize=(8, 8), dpi=600, fname='demo.png'):
