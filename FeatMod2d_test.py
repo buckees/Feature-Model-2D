@@ -3,16 +3,16 @@
 # import numpy as np
 from FeatMod2d_ops import (width, height, res_x, res_z, num_ptcl, ibc, 
                           threshold, max_rflct, idstrb, step_fac, max_step,
-                          num_plot)
+                          num_plot, surf_norm_range, surf_norm_mode)
 from FeatMod2d_mesh import MESHGRID
 # from FeatMod2d_ptcl import PARTICLE
 from Species import Arp
-from FeatMod2d_mat import Si2d
+from FeatMod2d_mat import Si2d_trench
 
 # create mesh
 mesh = MESHGRID(width, height, res_x, res_z)
 print(mesh)
-mesh.mat_input(Si2d)
+mesh.mat_input(Si2d_trench)
 mesh.find_surf()
 
 delta_L = min(res_x, res_z)*step_fac
@@ -22,11 +22,13 @@ for k in range(num_ptcl):
     if (k + 1) % int(num_ptcl/num_plot) == 0:
         print('%d particles are launched!' % (k+1))
         mesh.plot(dpi=300, fname='nptcl=%d.png' % (k+1))
+        mesh.plot_surf(surf_norm_range=surf_norm_range, 
+                       surf_norm_mode=surf_norm_mode, 
+                       dpi=300, fname='surf_nptcl=%d.png' % (k+1))
 
     Arp.dead = 0
     Arp.init_posn(width, height)
     Arp.init_uvec(idstrb)
-    # Arp.init_uvec(['Mono', 15.0])
     num_rflct = 0
 
     for i in range(max_step):
