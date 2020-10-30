@@ -67,7 +67,7 @@ class REFLECT(object):
         """
         return ivec - 2.0*np.dot(ivec, self.svec)*self.svec
         
-    def diff_rflct(self, stheta):
+    def diff_rflct(self):
         """
         Calc the diffusive refelection.
         
