@@ -7,7 +7,7 @@ from copy import copy, deepcopy
 
 from FeatMod2d_ops import (width, height, res_x, res_z, num_ptcl, ibc, 
                           threshold, max_rflct, idstrb, step_fac, max_step,
-                          num_plot)
+                          num_plot, surf_norm_range, surf_norm_mode)
 from FeatMod2d_mesh import MESHGRID
 # from FeatMod2d_ptcl import PARTICLE
 from Species import Arp
@@ -41,7 +41,7 @@ for k in range(num_ptcl):
     if k > num_ptcl - 20:
         rec_traj.append([])
         rec_traj[-1].append(Arp.posn.copy())
-    Arp.init_uvec(idistrb)
+    Arp.init_uvec(idstrb)
 
     num_rflct = 0
 #    while imove_ptcl == 1 and num_rflct < 5:
