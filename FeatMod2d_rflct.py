@@ -1,6 +1,7 @@
 """Feature Model 2D. Reflection."""
 
 import numpy as np
+from math import cos, sin
 from scipy.stats import cosine
 
 
@@ -66,7 +67,7 @@ class REFLECT(object):
         """
         return ivec - 2.0*np.dot(ivec, self.svec)*self.svec
         
-    def diff_rflct(self):
+    def diff_rflct(self, stheta):
         """
         Calc the diffusive refelection.
         
@@ -74,9 +75,9 @@ class REFLECT(object):
         rtheta = reflective theta wrt x=0+
         return reflective unit vector
         """
-        rtheta = cosine.rvs(size=1)[0]
+        rtheta = cosine.rvs(size=1, scale=0.5)[0]
         rtheta += self.stheta
-        return np.array([np.cos(rtheta), np.sin(rtheta)])
+        return np.array([cos(rtheta), sin(rtheta)])
 
     def mix_rflct(self, ivec, ratio=1.0):
         """
