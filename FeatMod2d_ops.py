@@ -5,25 +5,25 @@ width, height = 100.0, 260.0  # nm
 res_x, res_z = 1.0, 1.0  # nm
 
 # particle information
-num_ptcl = 1000
+num_ptcl = 3000
+# max steps for a single particle
+max_step = 1000
+# step length factor
+step_fac = 0.5
+
 
 # reflection information
-max_rflct = -1
+max_rflct = 5
 
 # reaction informaiton
 threshold = 1.0
 
 # init uvec distribution
-idstrb = ['Uniform3D', -45.0, 45.0]
+# idstrb = ['Uniform3D', -45.0, 45.0]
+idstrb = ['Mono', 0.0]
 
 # boundary condition
 ibc = 'periodic'
-
-# step length factor
-step_fac = 0.5
-
-# max steps for a single particle
-max_step = 1000
 
 # surf norm calc
 surf_norm_range = 4
