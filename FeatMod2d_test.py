@@ -8,6 +8,7 @@ from FeatMod2d_mesh import MESHGRID
 # from FeatMod2d_ptcl import PARTICLE
 from Species import Arp
 from FeatMod2d_mat import Si2d_trench
+from FeatMod2d_rflct import REFLECT
 
 # create mesh
 mesh = MESHGRID(width, height, res_x, res_z)
@@ -16,6 +17,7 @@ mesh.mat_input(Si2d_trench)
 mesh.find_surf()
 
 delta_L = min(res_x, res_z)*step_fac
+Arp_rflct = REFLECT()
 
 for k in range(num_ptcl):
     # print in process
@@ -31,6 +33,7 @@ for k in range(num_ptcl):
     Arp.init_uvec(idstrb)
     num_rflct = 0
 
+    num_rflct = 0
     for i in range(max_step):
         # advance the ptcl by delta_L
         Arp.move_ptcl(delta_L)
@@ -42,12 +45,29 @@ for k in range(num_ptcl):
         hit_mat, hit_idx = mesh.hit_check(Arp.posn)
         if hit_mat:
             mat_name = mesh.mater[hit_mat]
-            Arp.dead = 1
             # calc surf norm
             if mat_name == 'Si':
                 # now ireact = 1
                 mesh.mat[hit_idx] = 0
                 mesh.update_surf(hit_idx)
+                Arp.dead = 1
+            else:
+                if num_rflct > max_rflct:
+                    Arp.dead = 1
+                    break
+                # Test diffusive rflct only
+                Arp.uvec = Arp_rflct.diff_rflct()
+                # move the ptcl by 10 steps until it gets out of the mat
+                for ii in range(10):
+                    Arp.move_ptcl(delta_L)
+                    Arp.bdry_check(mesh.width, mesh.height, ibc)
+                    hit_mat, hit_idx = mesh.hit_check(Arp.posn)
+                    if not hit_mat:
+                        break
+                if hit_mat:
+                    Arp.dead = 1
+                    break
+                num_rflct += 1
                 
         # check if the ptcl is dead
         if Arp.dead:
