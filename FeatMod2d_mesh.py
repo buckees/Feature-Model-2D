@@ -5,6 +5,9 @@ from math import cos, sin
 import copy
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+colMap = copy.copy(cm.get_cmap("Accent"))
+colMap.set_under(color='white')
+
 from scipy.optimize import minimize, least_squares
 
 from FeatMod2d_misc import isInsideTrgl
@@ -174,8 +177,6 @@ class MESHGRID(object):
 
     def plot(self, figsize=(8, 8), dpi=600, fname='demo.png'):
         """Plot mesh and surface."""
-        colMap = copy.copy(cm.get_cmap("Accent"))
-        colMap.set_under(color='white')
 
         fig, axes = plt.subplots(1, 2, figsize=figsize, dpi=dpi,
                                  constrained_layout=True)
@@ -337,6 +338,27 @@ class MESHGRID(object):
                 surf_norm = np.array([sin(theta), -cos(theta)])
         
         return surf_norm, theta
+
+    def plot_surf(self, figsize=(8, 8), dpi=600, fname='demo_surf.png',
+                  surf_norm_range=2, surf_norm_mode='Fit Plane'):
+        """Plot surf norm for all surf nodes."""
+        fig, axes = plt.subplots(1, 2, figsize=figsize, dpi=dpi,
+                                 constrained_layout=True)
+        ax = axes[0]
+        ax.scatter(self.x, self.z, c=self.mat, s=1, cmap=colMap, vmin=0.2)
+        ax = axes[1]
+        ax.scatter(self.x, self.z, c=self.surf, s=1)
+        
+        surf_list = np.transpose(np.nonzero(self.surf == 1))
+        
+        for surf_idx in surf_list:
+            surf_idx = tuple(surf_idx)
+            svec, sth = self.calc_surf_norm(surf_idx, radius=surf_norm_range, 
+                                    imode=surf_norm_mode)        
+            ax.quiver(self.x[surf_idx], self.z[surf_idx],
+                          svec[0], svec[1], width=0.001)
+           
+        fig.savefig(fname, dpi=dpi)
 
     def find_float_cell(self):
         """
