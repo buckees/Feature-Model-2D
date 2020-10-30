@@ -332,7 +332,7 @@ class MESHGRID(object):
             temp_norm = np.linalg.norm(surf_norm)
             if temp_norm:
                 surf_norm = surf_norm/np.linalg.norm(surf_norm)
-                theta = np.arccos(surf_norm)
+                theta = np.arccos(surf_norm[0])
             else:
                 theta = np.random.uniform(-np.pi, np.pi)
                 surf_norm = np.array([sin(theta), -cos(theta)])
