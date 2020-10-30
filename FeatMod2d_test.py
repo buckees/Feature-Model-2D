@@ -74,7 +74,8 @@ for k in range(num_ptcl):
                     rec_traj[-1].append(Arp.posn.copy())
                     break
                 # Test diffusive rflct only
-                Arp.uvec = Arp_rflct.diff_rflct(Arp_rflct.stheta)
+                # Arp.uvec = Arp_rflct.diff_rflct()
+                Arp.uvec = Arp_rflct.spec_rflct(Arp.uvec)
                 # move the ptcl by 10 steps until it gets out of the mat
                 for ii in range(10):
                     Arp.move_ptcl(delta_L)
