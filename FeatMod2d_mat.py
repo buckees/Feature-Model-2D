@@ -51,9 +51,9 @@ m = [('PR', 3),   'rect', (0.0, 225.0, 30.0, 25.0)]
 Si2d.append(m)
 m = [('PR', 3),   'rect', (70.0, 225.0, 30.0, 25.0)]
 Si2d.append(m)
-m = [('Vac', 0),   'trgl', (30.0, 225.0, 30.0, 250.0, 20.0, 250.0)]
+m = [('Vac', 0),   'trgl', (30.0, 225.0, 30.0, 250.0, 25.0, 250.0)]
 Si2d.append(m)
-m = [('Vac', 0),   'trgl', (70.0, 225.0, 70.0, 250.0, 80.0, 250.0)]
+m = [('Vac', 0),   'trgl', (70.0, 225.0, 70.0, 250.0, 75.0, 250.0)]
 Si2d.append(m)
 
 # Si2d_trench is designed to verify the bottom reflection
