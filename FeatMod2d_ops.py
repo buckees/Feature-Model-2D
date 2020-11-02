@@ -5,7 +5,7 @@ width, height = 100.0, 260.0  # nm
 res_x, res_z = 1.0, 1.0  # nm
 
 # particle information
-num_ptcl = 3000
+num_ptcl = 5000
 # max steps for a single particle
 max_step = 1000
 # step length factor
