@@ -36,6 +36,7 @@ for k in range(num_ptcl):
         mesh.plot_surf(surf_norm_range=surf_norm_range, 
                        surf_norm_mode=surf_norm_mode, 
                        dpi=300, fname='surf_nptcl=%d.png' % (k+1))
+        mesh.find_float_cell(idiag=1)
 
     Arp.dead = 0
     Arp.init_posn(width, height)
