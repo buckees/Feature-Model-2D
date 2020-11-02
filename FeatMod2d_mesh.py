@@ -360,31 +360,42 @@ class MESHGRID(object):
            
         fig.savefig(fname, dpi=dpi)
 
-    def find_float_cell(self):
+    def find_float_cell(self, imode='Direct', idiag=0):
         """
-        Search for the cells which are not connected.
+        Search for the floating cells.
         
-        Scan each cell, check its 4 neighours, top, bottom, left and right.
+        Scan each material cell 
+        imode: str, var, ['Direct', 'Diagonal']
+        imode = 'Direct': check its 4 neighbours, top, bottom, left and right.
+        imode = 'Diagonal': check additional 4 diagonal neighbours, top-left,
+                            top-right, bottom-left, bottom-right.
         If they are all empty, the cell is identified as a floating cell, 
         which will be dropped to bottom.
         """
+        float_cell = list()
+        # if idiag == 1, record the floating cells
+        if idiag:
+            self.float_cell = np.zeros_like(self.mat).astype(int)
         for j in range(1, self.nz-1):
             for i in range(self.nx):
                 # if mat[i,j] is not 0
                 if self.mat[j, i]:
                     # check its 4 neighbours
-                    bottom = self.mat[j-1, i]
-                    top = self.mat[j+1, i]
-                    if i == 0:
-                        left = self.mat[j, self.nx-1]
-                    else:
-                        left = self.mat[j, i-1]
-                    if i == self.nx-1:
-                        right = self.mat[j, 0]
-                    else:
-                        right = self.mat[j, i+1]
-                    if (bottom + top + left + right) == 0:
-                        self.drop_cell((j, i))
+                    temp = self.mat[j-1, i]
+                    temp += self.mat[j+1, i]
+                    temp += self.mat[j, i-1]
+                    temp += self.mat[j, (i+1) % self.nx]
+                    if not temp:
+                        float_cell.append((j, i))
+                        if idiag:
+                            self.float_cell[j, i] = 1
+        # plot the floating cells    
+        if idiag:
+            fig = plt.figure(figsize=(4, 8), dpi=300)
+            plt.scatter(self.x, self.z, c=self.float_cell, s=1,
+                        cmap=colMap, vmin=0.2)
+            fig.savefig('float_cells.png', dpi=300)
+            plt.show()
 
     def drop_cell(self, idx):
         """
