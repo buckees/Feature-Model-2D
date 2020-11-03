@@ -36,7 +36,7 @@ for k in range(num_ptcl):
         mesh.plot_surf(surf_norm_range=surf_norm_range, 
                        surf_norm_mode=surf_norm_mode, 
                        dpi=300, fname='surf_nptcl=%d.png' % (k+1))
-        mesh.find_float_cell(idiag=1)
+        # mesh.find_float_cell(idiag=1)
 
     Arp.dead = 0
     Arp.init_posn(width, height)
@@ -68,6 +68,8 @@ for k in range(num_ptcl):
                 # now ireact = 1
                 mesh.mat[hit_idx] = 0
                 mesh.update_surf(hit_idx)
+                # find the floating cells
+                # mesh.find_float_cell()
                 Arp.dead = 1
             else:
                 if num_rflct > max_rflct:
