@@ -94,6 +94,9 @@ class MESHGRID(object):
                         if isInsideTrgl(p1_x, p1_y, p2_x, p2_y, p3_x, p3_y,
                                         tempx, tempz):
                             self.mat[j, i] = int(mater[1])
+        
+        # find the surf nodes and surf_vac nodes
+        self._find_surf()
 
     def _check_surf(self, _idx):
         _j, _i = _idx
@@ -128,7 +131,7 @@ class MESHGRID(object):
             if tempb:
                 self.surf[_idx] = -1
 
-    def find_surf(self):
+    def _find_surf(self):
         """Search for the surface nodes."""
         self.surf = np.zeros_like(self.mat).astype(int)
         # search surface within materials
