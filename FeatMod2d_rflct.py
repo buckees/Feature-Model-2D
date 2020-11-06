@@ -24,27 +24,28 @@ class REFLECT(object):
             self.prob = 0.5
         return self.prob
 
-    def rflct(self, ivec, erg=1.0):
+    def rflct(self, ivec, erg=1.0, imode={'spec':0.3, 'mix':0.4 , 'diff':0.3}):
         """
         Calc the reflection.
         
-        ivec: incident vector
-        erg: incident energy in eV
-        return reflective vector
+        ivec: a.u., (2, ) array, incident vector
+        erg: eV, var, incident particle energy
+        imode: a.u., dict, determine the prob of each rflct mode
+        return a vec: a.u., (2, ) array, reflected vec
         """
         rnd = np.random.uniform(0.0, 1.0)
-        if 0.0 <= rnd < 0.33:
-            return self.spec_rflct(ivec)
-        elif 0.33 <= rnd < 0.66:
-            return self.mix_rflct(ivec, ratio=(0.7-rnd)/(rnd-0.3) )
+        if 0.0 <= rnd < imode['spec']:
+            return self._spec_rflct(ivec)
+        elif  imode['spec'] <= rnd < (imode['spec'] + imode['mix']):
+            return self._mix_rflct(ivec, ratio=(0.7-rnd)/(rnd-0.3) )
         else:
-            return self.diff_rflct()
+            return self._diff_rflct()
 
-    def revs_rflct(self, ivec):
+    def _revs_rflct(self, ivec):
         """Reverse the incident vector."""
         return -ivec
 
-    def rand_rflct(self):
+    def _rand_rflct(self):
         """
         Calc the uniform random refelection.
         
@@ -56,7 +57,7 @@ class REFLECT(object):
         rtheta += self.stheta
         return np.array([np.cos(rtheta), np.sin(rtheta)])
     
-    def spec_rflct(self, ivec):
+    def _spec_rflct(self, ivec):
         """
         Calc the specular reflection.
         
@@ -67,7 +68,7 @@ class REFLECT(object):
         """
         return ivec - 2.0*np.dot(ivec, self.svec)*self.svec
         
-    def diff_rflct(self):
+    def _diff_rflct(self):
         """
         Calc the diffusive refelection.
         
@@ -79,7 +80,7 @@ class REFLECT(object):
         rtheta += self.stheta
         return np.array([cos(rtheta), sin(rtheta)])
 
-    def mix_rflct(self, ivec, ratio=1.0):
+    def _mix_rflct(self, ivec, ratio=1.0):
         """
         Calc the mixed reflection from specular and diffusive.
         
