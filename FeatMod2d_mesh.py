@@ -95,41 +95,47 @@ class MESHGRID(object):
                                         tempx, tempz):
                             self.mat[j, i] = int(mater[1])
 
+    def _check_surf(self, _idx):
+        _j, _i = _idx
+        # if self.mat[_idx] > 0, it could be a surf node
+        if self.mat[_idx]:
+            # find surf nodes
+            # tempa = multiply all neighbours
+            # tempa = 0 means one of neighbours = 0
+            tempa = self.mat[_j, (_i-1) % self.nx]
+            tempa *= self.mat[_j, (_i+1) % self.nx]
+            tempa *= self.mat[(_j-1) % self.nz, _i]
+            tempa *= self.mat[(_j+1) % self.nz, _i]
+            tempa *= self.mat[(_j-1) % self.nz, (_i-1) % self.nx]
+            tempa *= self.mat[(_j-1) % self.nz, (_i+1) % self.nx]
+            tempa *= self.mat[(_j+1) % self.nz, (_i-1) % self.nx]
+            tempa *= self.mat[(_j+1) % self.nz, (_i+1) % self.nx]
+            if not tempa:
+                self.surf[_idx] = 1
+        # if self.mat[_idx] = 0, it could be a surf_vac node
+        else:    
+            # f_ind surf nodes _in vac
+            # tempb = sum all ne_ighbours
+            # tempb != 0 means one of ne_ighbours _is surf node
+            tempb = self.mat[_j, (_i-1) % self.nx]
+            tempb += self.mat[_j, (_i+1) % self.nx]
+            tempb += self.mat[(_j-1) % self.nz, _i]
+            tempb += self.mat[(_j+1) % self.nz, _i]
+            tempb += self.mat[(_j-1) % self.nz, (_i-1) % self.nx]
+            tempb += self.mat[(_j-1) % self.nz, (_i+1) % self.nx]
+            tempb += self.mat[(_j+1) % self.nz, (_i-1) % self.nx]
+            tempb += self.mat[(_j+1) % self.nz, (_i+1) % self.nx]
+            if tempb:
+                self.surf[_idx] = -1
+
     def find_surf(self):
         """Search for the surface nodes."""
         self.surf = np.zeros_like(self.mat).astype(int)
         # search surface within materials
         for j in range(1, self.nz-1):
             for i in range(self.nx):
-                # if mat[i,j] is not 0
-                if self.mat[j, i]:
-                    # find surf nodes
-                    # tempa = multiply all neighbours
-                    # tempa = 0 means one of neighbours = 0
-                    tempa = self.mat[j, (i-1) % self.nx]
-                    tempa *= self.mat[j, (i+1) % self.nx]
-                    tempa *= self.mat[(j-1) % self.nz, i]
-                    tempa *= self.mat[(j+1) % self.nz, i]
-                    tempa *= self.mat[(j-1) % self.nz, (i-1) % self.nx]
-                    tempa *= self.mat[(j-1) % self.nz, (i+1) % self.nx]
-                    tempa *= self.mat[(j+1) % self.nz, (i-1) % self.nx]
-                    tempa *= self.mat[(j+1) % self.nz, (i+1) % self.nx]
-                    if not tempa:
-                        self.surf[j, i] = 1
-                else:    
-                    # find surf nodes in vac
-                    # tempb = sum all neighbours
-                    # tempb != 0 means one of neighbours is surf node
-                    tempb = self.mat[j, (i-1) % self.nx]
-                    tempb += self.mat[j, (i+1) % self.nx]
-                    tempb += self.mat[(j-1) % self.nz, i]
-                    tempb += self.mat[(j+1) % self.nz, i]
-                    tempb += self.mat[(j-1) % self.nz, (i-1) % self.nx]
-                    tempb += self.mat[(j-1) % self.nz, (i+1) % self.nx]
-                    tempb += self.mat[(j+1) % self.nz, (i-1) % self.nx]
-                    tempb += self.mat[(j+1) % self.nz, (i+1) % self.nx]
-                    if tempb:
-                        self.surf[j, i] = -1
+                self._check_surf((j, i))
+
         # construct the surf set
         self.surf_set = set()
         # find the beginning node, search starting from the top left corner
@@ -190,34 +196,7 @@ class MESHGRID(object):
         #     for i in range(self.nx):
                 self.surf[j, i] = 0
                 # if mat[i,j] is not 0
-                if self.mat[j, i]:
-                    # find surf nodes
-                    # tempa = multiply all neighbours
-                    # tempa = 0 means one of neighbours = 0
-                    tempa = self.mat[j, (i-1) % self.nx]
-                    tempa *= self.mat[j, (i+1) % self.nx]
-                    tempa *= self.mat[(j-1) % self.nz, i]
-                    tempa *= self.mat[(j+1) % self.nz, i]
-                    tempa *= self.mat[(j-1) % self.nz, (i-1) % self.nx]
-                    tempa *= self.mat[(j-1) % self.nz, (i+1) % self.nx]
-                    tempa *= self.mat[(j+1) % self.nz, (i-1) % self.nx]
-                    tempa *= self.mat[(j+1) % self.nz, (i+1) % self.nx]
-                    if not tempa:
-                        self.surf[j, i] = 1
-                else:    
-                    # find surf nodes in vac
-                    # tempb = sum all neighbours
-                    # tempb != 0 means one of neighbours is surf node
-                    tempb = self.mat[j, (i-1) % self.nx]
-                    tempb += self.mat[j, (i+1) % self.nx]
-                    tempb += self.mat[(j-1) % self.nz, i]
-                    tempb += self.mat[(j+1) % self.nz, i]
-                    tempb += self.mat[(j-1) % self.nz, (i-1) % self.nx]
-                    tempb += self.mat[(j-1) % self.nz, (i+1) % self.nx]
-                    tempb += self.mat[(j+1) % self.nz, (i-1) % self.nx]
-                    tempb += self.mat[(j+1) % self.nz, (i+1) % self.nx]
-                    if tempb:
-                        self.surf[j, i] = -1
+                self._check_surf((j, i))
 
     def plot(self, figsize=(8, 8), dpi=600, fname='Mesh.png'):
         """Plot mesh and surface."""
