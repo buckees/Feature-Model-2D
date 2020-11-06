@@ -148,29 +148,29 @@ class MESHGRID(object):
             
             if (_i-1) >= 0:
                 if not (_idx_left in self.surf_set):
-                    _mat_left = self.mat[_idx_left]
-                    if _mat_left:
+                    _mat_left = self.surf[_idx_left]
+                    if _mat_left == 1:
                         self.surf_set.add(_idx_left)
                         _find_next_node(_idx_left)
                 
             if (_i+1) <= self.nx-1:
                 if not (_idx_right in self.surf_set):
-                    _mat_right = self.mat[_idx_right]
-                    if _mat_right:
+                    _mat_right = self.surf[_idx_right]
+                    if _mat_right == 1:
                         self.surf_set.add(_idx_right)
                         _find_next_node(_idx_right)
             
             if (_j+1) <= self.nz-1:
                 if not (_idx_up in self.surf_set):
-                    _mat_up = self.mat[_idx_up]
-                    if _mat_up:
+                    _mat_up = self.surf[_idx_up]
+                    if _mat_up == 1:
                         self.surf_set.add(_idx_up)
                         _find_next_node(_idx_up)
             
             if (_j-1) >= 0:
                 if not (_idx_down in self.surf_set):
-                    _mat_down = self.mat[_idx_down]
-                    if _mat_down:
+                    _mat_down = self.surf[_idx_down]
+                    if _mat_down == 1:
                         self.surf_set.add(_idx_down)
                         _find_next_node(_idx_down)
                 
@@ -470,7 +470,6 @@ if __name__ == '__main__':
     mesh = MESHGRID(width, height, res_x, res_z)
     mesh.mat_input(Si2d)
     mesh.find_surf()
-    mesh.find_surf_vac()
     mesh.plot()
     
     colMap = copy.copy(cm.get_cmap("Accent"))
@@ -481,7 +480,7 @@ if __name__ == '__main__':
         # temp_idx = (224, 13)
         temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx, 
                                                      radius=4,
-                                                     imode='Fit Plane')
+                                                     imode='Sum Vector')
         rec_surf.append([temp_idx, temp_svec])
 
     def plot_surf_norm(ax, posn, svec):
