@@ -97,7 +97,6 @@ class MESHGRID(object):
 
     def find_surf(self):
         """Search for the surface nodes."""
-        self.surf, self.surf_vac = [], []
         self.surf = np.zeros_like(self.mat).astype(int)
         # search surface within materials
         for j in range(1, self.nz-1):
@@ -131,6 +130,22 @@ class MESHGRID(object):
                     tempb += self.mat[(j+1) % self.nz, (i+1) % self.nx]
                     if tempb:
                         self.surf[j, i] = -1
+        # construct the surf set
+        self.surf_set = set()
+        # find the beginning node, search starting from the top left corner
+        for j in reversed(range(self.nz)):
+            if self.mat((j, 0)):
+                self.surf_set.add((j, 0))
+                _idx_curr = (j, 0)
+                break
+        
+        # find next node, search directions in sequence: left, up, right, down
+        def _find_next_node(_idx_curr):
+            _j, _i = _idx_curr
+            _idx_left, _idx_up, _idx_right, _idx_down = \
+                           (_j, _i-1), (_j+1, _i), (_j, _i+1), (_j-1, _i)
+            if 
+                
     
     def update_surf(self, idx, radius=2):
         """
@@ -175,9 +190,8 @@ class MESHGRID(object):
                     if tempb:
                         self.surf[j, i] = -1
 
-    def plot(self, figsize=(8, 8), dpi=600, fname='demo.png'):
+    def plot(self, figsize=(8, 8), dpi=600, fname='Mesh.png'):
         """Plot mesh and surface."""
-
         fig, axes = plt.subplots(1, 2, figsize=figsize, dpi=dpi,
                                  constrained_layout=True)
         ax = axes[0]
