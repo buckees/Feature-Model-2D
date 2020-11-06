@@ -90,8 +90,8 @@ class REFLECT(object):
         diff_uvec = diffusive reflective vector
         mix_uvec = mixed reflective vector
         """
-        spec_uvec = self.spec_rflct(ivec)
-        diff_uvec = self.diff_rflct()
+        spec_uvec = self._spec_rflct(ivec)
+        diff_uvec = self._diff_rflct()
         mix_uvec = ratio/(ratio+1.0)*spec_uvec + 1.0/(ratio+1.0)*diff_uvec
         return mix_uvec/np.linalg.norm(mix_uvec)
         
