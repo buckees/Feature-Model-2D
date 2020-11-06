@@ -124,3 +124,7 @@ ax.set_ylim(0.0, mesh.height)
 plot_traj(ax, rec_traj)
 
 fig.savefig('ptcl_traj.png', dpi=300)
+
+np.save('mesh_mat', mesh.mat)
+np.save('mesh_x', mesh.x)
+np.save('mesh_z', mesh.z)
