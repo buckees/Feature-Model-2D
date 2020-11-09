@@ -463,6 +463,18 @@ class MESHGRID(object):
             idx_j -= 1
             bottom = self.mat[idx_j-1, idx_i]
         self.mat[idx_j, idx_i] = temp_mat
+    
+    def drop_floating_cell(self, imode='Remove'):
+        """
+        Drop the floating cells/clusters.
+        
+        imode: str, determine how to drop to the floating cells/clusters.
+            imode = 'Remove', simply remove the floating cells/clusters.
+            imode = 'Drop', drop the floating cells/clusthers downwards.
+        """
+        if imode == 'Remove':
+            _idx_arr = np.where(self.surf == 1)
+            for 
 
 def rect_conv(coord, res_x, res_z):
     """Convert rectangular coordinates to index."""
