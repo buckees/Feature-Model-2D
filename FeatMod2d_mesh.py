@@ -202,13 +202,16 @@ class MESHGRID(object):
         Therefore, only the neighbors of the changed node is re-searched.
         """
         idx_j, idx_i = idx
+        # search within a box of 2*radius+1
         for j in range(idx_j-radius, idx_j+radius+1):
             for i in range(idx_i-radius, idx_i+radius+1):
-        # for j in range(1, self.nz-1):
-        #     for i in range(self.nx):
                 self.surf[j, i] = 0
-                # if mat[i,j] is not 0
                 self._check_surf((j, i))
+        
+        for j in range(idx_j-radius, idx_j+radius+1):
+            for i in range(idx_i-radius, idx_i+radius+1):
+                if self.surf[j, i] == 1:
+                    
 
     def plot(self, figsize=(8, 8), dpi=600, fname='Mesh.png'):
         """Plot mesh and surface."""
