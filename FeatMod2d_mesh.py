@@ -157,7 +157,7 @@ class MESHGRID(object):
                 _idx_curr = (j, 0)
                 break
 
-        # using recursive method for depth search
+        # using recursive method for depth search globally
         self._find_next_node(_idx_curr, 
                              lb=0, rb=self.nx-1, tb=self.nz-1, bb=0)
         
@@ -216,21 +216,15 @@ class MESHGRID(object):
         Therefore, only the neighbors of the changed node is re-searched.
         """
         _j, _i = idx
-        # search within a box of 2*radius+1
+        # update the surf nodes within a box of 2*radius+1
         for j in range(_j-radius, _j+radius+1):
             for i in range(_i-radius, _i+radius+1):
                 self.surf[j, i] = 0
                 self._check_surf((j, i))
         
-        
-        
-        for j in range(idx_j-radius, idx_j+radius+1):
-            for i in range(idx_i-radius, idx_i+radius+1):
-                if (j, i) in self.surf_set:
-                    _idx_curr = (j, i)
-                    # using recursive method for depth search
-                    self._find_next_node(_idx_curr, 
-                             lb=0, rb=self.nx-1, tb=self.nz-1, bb=0)
+        # redo _find_surf_set() globally
+        # cannot find a way to update it locally
+        self._find_surf_set()
                     
 
     def plot(self, figsize=(8, 8), dpi=600, fname='Mesh.png'):
