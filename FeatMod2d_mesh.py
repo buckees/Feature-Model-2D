@@ -98,6 +98,13 @@ class MESHGRID(object):
         # find the surf nodes and surf_vac nodes
         self._find_surf()
         self._find_surf_set()
+    
+    def restart_mat(self, fname='restart_mat.npy'):
+        """Read in mat from restart file."""
+        self.mat = np.load(fname)
+        # find the surf nodes and surf_vac nodes
+        self._find_surf()
+        self._find_surf_set()
 
     def _check_surf(self, _idx):
         _j, _i = _idx
