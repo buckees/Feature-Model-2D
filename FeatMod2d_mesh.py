@@ -56,7 +56,7 @@ class MESHGRID(object):
                    self.res_x, self.res_z,
                    self.nx, self.nz)
 
-    def mat_input(self, materials):
+    def add_mat(self, materials):
         """Assign input materials to the mesh."""
         self.mater = ['Vac', 'SiO2', 'Si', 'PR']
 
