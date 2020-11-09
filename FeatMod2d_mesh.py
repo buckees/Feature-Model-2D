@@ -106,38 +106,38 @@ class MESHGRID(object):
         self._find_surf()
         self._find_surf_set()
 
-    def _check_surf(self, _idx):
-        _j, _i = _idx
-        # if self.mat[_idx] > 0, it could be a surf node
-        if self.mat[_idx]:
+    def _check_surf(self, idx):
+        j, i = idx
+        # if self.mat[idx] > 0, it could be a surf node
+        if self.mat[idx]:
             # find surf nodes
             # tempa = multiply all neighbours
             # tempa = 0 means one of neighbours = 0
-            tempa = self.mat[_j, (_i-1) % self.nx]
-            tempa *= self.mat[_j, (_i+1) % self.nx]
-            tempa *= self.mat[(_j-1) % self.nz, _i]
-            tempa *= self.mat[(_j+1) % self.nz, _i]
-            tempa *= self.mat[(_j-1) % self.nz, (_i-1) % self.nx]
-            tempa *= self.mat[(_j-1) % self.nz, (_i+1) % self.nx]
-            tempa *= self.mat[(_j+1) % self.nz, (_i-1) % self.nx]
-            tempa *= self.mat[(_j+1) % self.nz, (_i+1) % self.nx]
+            tempa = self.mat[j, (i-1) % self.nx]
+            tempa *= self.mat[j, (i+1) % self.nx]
+            tempa *= self.mat[(j-1) % self.nz, i]
+            tempa *= self.mat[(j+1) % self.nz, i]
+            tempa *= self.mat[(j-1) % self.nz, (i-1) % self.nx]
+            tempa *= self.mat[(j-1) % self.nz, (i+1) % self.nx]
+            tempa *= self.mat[(j+1) % self.nz, (i-1) % self.nx]
+            tempa *= self.mat[(j+1) % self.nz, (i+1) % self.nx]
             if not tempa:
-                self.surf[_idx] = 1
-        # if self.mat[_idx] = 0, it could be a surf_vac node
+                self.surf[idx] = 1
+        # if self.mat[idx] = 0, it could be a surf_vac node
         else:    
-            # f_ind surf nodes _in vac
-            # tempb = sum all ne_ighbours
-            # tempb != 0 means one of ne_ighbours _is surf node
-            tempb = self.mat[_j, (_i-1) % self.nx]
-            tempb += self.mat[_j, (_i+1) % self.nx]
-            tempb += self.mat[(_j-1) % self.nz, _i]
-            tempb += self.mat[(_j+1) % self.nz, _i]
-            tempb += self.mat[(_j-1) % self.nz, (_i-1) % self.nx]
-            tempb += self.mat[(_j-1) % self.nz, (_i+1) % self.nx]
-            tempb += self.mat[(_j+1) % self.nz, (_i-1) % self.nx]
-            tempb += self.mat[(_j+1) % self.nz, (_i+1) % self.nx]
+            # find surf nodes in vac
+            # tempb = sum all neighbours
+            # tempb != 0 means one of neighbours is surf node
+            tempb = self.mat[j, (i-1) % self.nx]
+            tempb += self.mat[j, (i+1) % self.nx]
+            tempb += self.mat[(j-1) % self.nz, i]
+            tempb += self.mat[(j+1) % self.nz, i]
+            tempb += self.mat[(j-1) % self.nz, (i-1) % self.nx]
+            tempb += self.mat[(j-1) % self.nz, (i+1) % self.nx]
+            tempb += self.mat[(j+1) % self.nz, (i-1) % self.nx]
+            tempb += self.mat[(j+1) % self.nz, (i+1) % self.nx]
             if tempb:
-                self.surf[_idx] = -1
+                self.surf[idx] = -1
 
     def _find_surf(self):
         """Search for the surface nodes."""
@@ -156,43 +156,52 @@ class MESHGRID(object):
                 self.surf_set.add((j, 0))
                 _idx_curr = (j, 0)
                 break
-        
-        # find next node, search directions in sequence: left, up, right, down
-        def _find_next_node(_idx_curr):
-            _j, _i = _idx_curr
-            _surf_left, _surf_up, _surf_right, _surf_down = 0, 0, 0, 0
-            _idx_left, _idx_up, _idx_right, _idx_down = \
-                            (_j, _i-1), (_j+1, _i), (_j, _i+1), (_j-1, _i)
-            # search in left
-            if (_i-1) >= 0:
-                if not (_idx_left in self.surf_set):
-                    _surf_left = self.surf[_idx_left]
-                    if _surf_left == 1:
-                        self.surf_set.add(_idx_left)
-                        _find_next_node(_idx_left)
-            # search in right    
-            if (_i+1) <= self.nx-1:
-                if not (_idx_right in self.surf_set):
-                    _surf_right = self.surf[_idx_right]
-                    if _surf_right == 1:
-                        self.surf_set.add(_idx_right)
-                        _find_next_node(_idx_right)
-            # search in up
-            if (_j+1) <= self.nz-1:
-                if not (_idx_up in self.surf_set):
-                    _surf_up = self.surf[_idx_up]
-                    if _surf_up == 1:
-                        self.surf_set.add(_idx_up)
-                        _find_next_node(_idx_up)
-            # search in down
-            if (_j-1) >= 0:
-                if not (_idx_down in self.surf_set):
-                    _surf_down = self.surf[_idx_down]
-                    if _surf_down == 1:
-                        self.surf_set.add(_idx_down)
-                        _find_next_node(_idx_down)
+
         # using recursive method for depth search
-        _find_next_node(_idx_curr)
+        self._find_next_node(_idx_curr)
+        
+    # find next node, search directions in sequence: left, up, right, down
+    def _find_next_node(self, idx_curr, 
+                        lb=0, rb=self.nx-1, tb=self.nz-1, bb=0):
+        """
+        Depth search for surf nodes.
+        
+        _idx_curr: a.u., (j, i) tuple, starting node for depth search.
+        lb, rb, tb, bb: a.u., int, left, right, top and bottom bndy.
+        """
+        _j, _i = idx_curr
+        _surf_left, _surf_up, _surf_right, _surf_down = 0, 0, 0, 0
+        _idx_left, _idx_up, _idx_right, _idx_down = \
+                        (_j, _i-1), (_j+1, _i), (_j, _i+1), (_j-1, _i)
+        # search in left
+        if (_i-1) >= lb:
+            if not (_idx_left in self.surf_set):
+                _surf_left = self.surf[_idx_left]
+                if _surf_left == 1:
+                    self.surf_set.add(_idx_left)
+                    self._find_next_node(_idx_left)
+        # search in right    
+        if (_i+1) <= rb:
+            if not (_idx_right in self.surf_set):
+                _surf_right = self.surf[_idx_right]
+                if _surf_right == 1:
+                    self.surf_set.add(_idx_right)
+                    self._find_next_node(_idx_right)
+        # search in up
+        if (_j+1) <= tb:
+            if not (_idx_up in self.surf_set):
+                _surf_up = self.surf[_idx_up]
+                if _surf_up == 1:
+                    self.surf_set.add(_idx_up)
+                    self._find_next_node(_idx_up)
+        # search in down
+        if (_j-1) >= bb:
+            if not (_idx_down in self.surf_set):
+                _surf_down = self.surf[_idx_down]
+                if _surf_down == 1:
+                    self.surf_set.add(_idx_down)
+                    self._find_next_node(_idx_down)
+
     
     def update_surf(self, idx, radius=2):
         """
@@ -211,6 +220,7 @@ class MESHGRID(object):
         for j in range(idx_j-radius, idx_j+radius+1):
             for i in range(idx_i-radius, idx_i+radius+1):
                 if self.surf[j, i] == 1:
+                    pass
                     
 
     def plot(self, figsize=(8, 8), dpi=600, fname='Mesh.png'):
