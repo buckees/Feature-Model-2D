@@ -160,35 +160,35 @@ class MESHGRID(object):
         # find next node, search directions in sequence: left, up, right, down
         def _find_next_node(_idx_curr):
             _j, _i = _idx_curr
-            _mat_left, _mat_up, _mat_right, _mat_down = 0, 0, 0, 0
+            _surf_left, _surf_up, _surf_right, _surf_down = 0, 0, 0, 0
             _idx_left, _idx_up, _idx_right, _idx_down = \
                             (_j, _i-1), (_j+1, _i), (_j, _i+1), (_j-1, _i)
             # search in left
             if (_i-1) >= 0:
                 if not (_idx_left in self.surf_set):
-                    _mat_left = self.surf[_idx_left]
-                    if _mat_left == 1:
+                    _surf_left = self.surf[_idx_left]
+                    if _surf_left == 1:
                         self.surf_set.add(_idx_left)
                         _find_next_node(_idx_left)
             # search in right    
             if (_i+1) <= self.nx-1:
                 if not (_idx_right in self.surf_set):
-                    _mat_right = self.surf[_idx_right]
-                    if _mat_right == 1:
+                    _surf_right = self.surf[_idx_right]
+                    if _surf_right == 1:
                         self.surf_set.add(_idx_right)
                         _find_next_node(_idx_right)
             # search in up
             if (_j+1) <= self.nz-1:
                 if not (_idx_up in self.surf_set):
-                    _mat_up = self.surf[_idx_up]
-                    if _mat_up == 1:
+                    _surf_up = self.surf[_idx_up]
+                    if _surf_up == 1:
                         self.surf_set.add(_idx_up)
                         _find_next_node(_idx_up)
             # search in down
             if (_j-1) >= 0:
                 if not (_idx_down in self.surf_set):
-                    _mat_down = self.surf[_idx_down]
-                    if _mat_down == 1:
+                    _surf_down = self.surf[_idx_down]
+                    if _surf_down == 1:
                         self.surf_set.add(_idx_down)
                         _find_next_node(_idx_down)
         # using recursive method for depth search
