@@ -4,3 +4,4 @@
 .idea/Feature-Model-2D.iml
 *.png
 *.npy
+FeatMod2d_mesh_test.py
