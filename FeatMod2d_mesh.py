@@ -158,11 +158,12 @@ class MESHGRID(object):
                 break
 
         # using recursive method for depth search
-        self._find_next_node(_idx_curr)
+        self._find_next_node(_idx_curr, 
+                             lb=0, rb=self.nx-1, tb=self.nz-1, bb=0)
         
     # find next node, search directions in sequence: left, up, right, down
     def _find_next_node(self, idx_curr, 
-                        lb=0, rb=self.nx-1, tb=self.nz-1, bb=0):
+                        lb=0, rb=100, tb=100, bb=0):
         """
         Depth search for surf nodes.
         
@@ -179,28 +180,32 @@ class MESHGRID(object):
                 _surf_left = self.surf[_idx_left]
                 if _surf_left == 1:
                     self.surf_set.add(_idx_left)
-                    self._find_next_node(_idx_left)
+                    self._find_next_node(_idx_left,
+                                         lb=lb, rb=rb, tb=tb, bb=bb)
         # search in right    
         if (_i+1) <= rb:
             if not (_idx_right in self.surf_set):
                 _surf_right = self.surf[_idx_right]
                 if _surf_right == 1:
                     self.surf_set.add(_idx_right)
-                    self._find_next_node(_idx_right)
+                    self._find_next_node(_idx_right,
+                                         lb=lb, rb=rb, tb=tb, bb=bb)
         # search in up
         if (_j+1) <= tb:
             if not (_idx_up in self.surf_set):
                 _surf_up = self.surf[_idx_up]
                 if _surf_up == 1:
                     self.surf_set.add(_idx_up)
-                    self._find_next_node(_idx_up)
+                    self._find_next_node(_idx_up,
+                                         lb=lb, rb=rb, tb=tb, bb=bb)
         # search in down
         if (_j-1) >= bb:
             if not (_idx_down in self.surf_set):
                 _surf_down = self.surf[_idx_down]
                 if _surf_down == 1:
                     self.surf_set.add(_idx_down)
-                    self._find_next_node(_idx_down)
+                    self._find_next_node(_idx_down,
+                                         lb=lb, rb=rb, tb=tb, bb=bb)
 
     
     def update_surf(self, idx, radius=2):
