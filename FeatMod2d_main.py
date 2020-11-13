@@ -9,7 +9,7 @@ from FeatMod2d_ops import (width, height, res_x, res_z, num_ptcl, ibc,
                           threshold, max_rflct, idstrb, step_fac, max_step,
                           num_plot, surf_norm_range, surf_norm_mode)
 from FeatMod2d_mesh import MESHGRID
-# from FeatMod2d_ptcl import PARTICLE
+from FeatMod2d_ptcl import PARTICLE
 from Species import Arp
 from FeatMod2d_rflct import REFLECT
 from FeatMod2d_mat import Si2d
@@ -23,8 +23,10 @@ mesh.find_surf()
 
 delta_L = min(res_x, res_z)*step_fac
 # delta_L = min(res_x, res_z)
-# particle is imported from species
-# Arp = PARTICLE('Ar+', 'Ion',  32.0,     1)
+
+# species information is imported from species
+# Initialize the PARTICLE() object
+ptcl = PARTICLE(**Arp)
 Arp_rflct = REFLECT()
 
 # init diagnostics
