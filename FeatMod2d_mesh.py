@@ -474,7 +474,7 @@ class MESHGRID(object):
         """
         if imode == 'Remove':
             _idx_arr = np.where(self.surf == 1)
-            for 
+            pass
 
 def rect_conv(coord, res_x, res_z):
     """Convert rectangular coordinates to index."""
