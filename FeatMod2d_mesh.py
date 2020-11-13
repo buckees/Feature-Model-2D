@@ -161,13 +161,13 @@ class MESHGRID(object):
         self._find_next_node(_idx_curr, 
                              lb=0, rb=self.nx-1, tb=self.nz-1, bb=0)
         
-    # find next node, search directions in sequence: left, up, right, down
     def _find_next_node(self, idx_curr, 
                         lb=0, rb=100, tb=100, bb=0):
         """
-        Depth search for surf nodes.
+        Depth search for surf nodes. 
         
-        _idx_curr: a.u., (j, i) tuple, starting node for depth search.
+        Find next node, search directions in sequence: left, up, right, down.
+        idx_curr: a.u., (j, i) tuple, starting node for depth search.
         lb, rb, tb, bb: a.u., int, left, right, top and bottom bndy.
         """
         _j, _i = idx_curr
