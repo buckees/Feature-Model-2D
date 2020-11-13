@@ -10,7 +10,7 @@ from FeatMod2d_ops import (width, height, res_x, res_z, num_ptcl, ibc,
                           threshold, max_rflct, idstrb, step_fac, max_step,
                           num_plot, surf_norm_range, surf_norm_mode)
 from FeatMod2d_mesh import MESHGRID
-# from FeatMod2d_ptcl import PARTICLE
+from FeatMod2d_ptcl import PARTICLE
 from Species import Arp
 from FeatMod2d_mat import Si2d_trench
 from FeatMod2d_rflct import REFLECT
@@ -18,12 +18,14 @@ from FeatMod2d_rflct import REFLECT
 # create mesh
 mesh = MESHGRID(width, height, res_x, res_z)
 print(mesh)
-mesh.mat_input(Si2d_trench)
-mesh.find_surf()
+mesh.add_mat(Si2d_trench)
 
 delta_L = min(res_x, res_z)*step_fac
-Arp_rflct = REFLECT()
 
+# species information is imported from species
+# Initialize the PARTICLE() object
+ptcl = PARTICLE(**Arp)
+ptcl_rflct = REFLECT()
 
 # record for diagnostics
 rec_traj = []
@@ -38,29 +40,29 @@ for k in range(num_ptcl):
                        dpi=300, fname='surf_nptcl=%d.png' % (k+1))
         # mesh.find_float_cell(idiag=1)
 
-    Arp.dead = 0
-    Arp.init_posn(width, height)
-    Arp.init_uvec(idstrb)
+    ptcl.dead = 0
+    ptcl.init_posn(width, height)
+    ptcl.init_uvec(idstrb)
     num_rflct = 0
     
     # record the particle trajectory
     rec_traj.append([])
-    rec_traj[-1].append(Arp.posn.copy())
+    rec_traj[-1].append(ptcl.posn.copy())
 
     for i in range(max_step):
         # advance the ptcl by delta_L
-        Arp.move_ptcl(delta_L)
+        ptcl.move_ptcl(delta_L)
         # periodic b.c. at left and right bdry
-        Arp.bdry_check(mesh.width, mesh.height, ibc)
+        ptcl.bdry_check(mesh.width, mesh.height, ibc)
         # check if the ptcl is dead
-        if Arp.dead:
-            rec_traj[-1].append(Arp.posn.copy())
+        if ptcl.dead:
+            rec_traj[-1].append(ptcl.posn.copy())
             break
-        hit_mat, hit_idx = mesh.hit_check(Arp.posn)
+        hit_mat, hit_idx = mesh.hit_check(ptcl.posn)
         if hit_mat:
-            rec_traj[-1].append(Arp.posn.copy())
+            rec_traj[-1].append(ptcl.posn.copy())
             mat_name = mesh.mater[hit_mat]
-            Arp_rflct.svec, Arp_rflct.stheta = \
+            ptcl_rflct.svec, ptcl_rflct.stheta = \
                 mesh.calc_surf_norm(hit_idx, radius=surf_norm_range, 
                                     imode=surf_norm_mode)
             # calc surf norm
@@ -70,30 +72,30 @@ for k in range(num_ptcl):
                 mesh.update_surf(hit_idx)
                 # find the floating cells
                 # mesh.find_float_cell()
-                Arp.dead = 1
+                ptcl.dead = 1
             else:
                 if num_rflct > max_rflct:
-                    Arp.dead = 1
-                    rec_traj[-1].append(Arp.posn.copy())
+                    ptcl.dead = 1
+                    rec_traj[-1].append(ptcl.posn.copy())
                     break
                 # reflect
-                Arp.uvec = Arp_rflct.rflct(Arp.uvec)
+                ptcl.uvec = ptcl_rflct.rflct(ptcl.uvec)
                 # move the ptcl by 10 steps until it gets out of the mat
                 for ii in range(10):
-                    Arp.move_ptcl(delta_L)
-                    Arp.bdry_check(mesh.width, mesh.height, ibc)
-                    hit_mat, hit_idx = mesh.hit_check(Arp.posn)
+                    ptcl.move_ptcl(delta_L)
+                    ptcl.bdry_check(mesh.width, mesh.height, ibc)
+                    hit_mat, hit_idx = mesh.hit_check(ptcl.posn)
                     if not hit_mat:
                         break
                 if hit_mat:
-                    Arp.dead = 1
-                    rec_traj[-1].append(Arp.posn.copy())
+                    ptcl.dead = 1
+                    rec_traj[-1].append(ptcl.posn.copy())
                     break
                 num_rflct += 1
                 
         # check if the ptcl is dead
-        if Arp.dead:
-            rec_traj[-1].append(Arp.posn.copy())
+        if ptcl.dead:
+            rec_traj[-1].append(ptcl.posn.copy())
             break
         
     rec_traj[-1] = np.array(rec_traj[-1]).T
