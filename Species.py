@@ -12,4 +12,10 @@ Cl2 = PARTICLE('Cl2', 'Neut',  70.0,     0)
 Cl = PARTICLE('Cl', 'Neut',  35.0,     0)
 Clp = PARTICLE('Cl+', 'Ion',  35.0,     1)
 
+sp_full_list = {'Ar': Ar,
+                'Ar+': Arp,
+                'Cl2': Cl2,
+                'Cl': Cl,
+                'Cl+': Clp}
+
 Si = PARTICLE('Si', 'Neut',  28.0,     0)
