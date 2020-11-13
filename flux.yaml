@@ -1,0 +1,8 @@
+species:
+  - Ar+
+  - Cl+
+  - Cl
+flux:
+  Ar+: 1e15
+  Cl+: 3e15
+  Cl:  1e17
