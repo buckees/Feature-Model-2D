@@ -76,7 +76,7 @@ class REFLECT(object):
         rtheta = reflective theta wrt x=0+
         return reflective unit vector
         """
-        rtheta = cosine.rvs(size=1, scale=0.5)[0]
+        rtheta, = cosine.rvs(size=1, scale=0.5)
         rtheta += self.stheta
         return np.array([cos(rtheta), sin(rtheta)])
 
