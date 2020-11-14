@@ -4,14 +4,15 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from copy import copy, deepcopy
 import numpy as np
+from random import choices
 
-# import numpy as np
+
 from FeatMod2d_ops import (width, height, res_x, res_z, num_ptcl, ibc, 
                           threshold, max_rflct, idstrb, step_fac, max_step,
                           num_plot, surf_norm_range, surf_norm_mode)
 from FeatMod2d_mesh import MESHGRID
 from FeatMod2d_ptcl import PARTICLE
-from Species import Arp
+from FeatMod2d_readin import sp_run_list, sp_name, sp_weight
 from FeatMod2d_mat import Si2d_trench
 from FeatMod2d_rflct import REFLECT
 
@@ -22,16 +23,18 @@ mesh.add_mat(Si2d_trench)
 
 delta_L = min(res_x, res_z)*step_fac
 
-# species information is imported from species
 # Initialize the PARTICLE() object
-ptcl = PARTICLE(**Arp)
+# ptcl = PARTICLE()
 ptcl_rflct = REFLECT()
 
 # record for diagnostics
 rec_traj = []
 
 for k in range(num_ptcl):
-    # print in process
+    # randomly choose species from the sp_run_list according to its flux weight
+    temp_sp, = choices(sp_name, weights=sp_weight, k=1)
+    temp_sp_info = sp_run_list[temp_sp]
+    ptcl = PARTICLE(**temp_sp_info)
     if (k + 1) % int(num_ptcl/num_plot) == 0:
         print('%d particles are launched!' % (k+1))
         mesh.plot(dpi=300, fname='nptcl=%d.png' % (k+1))
