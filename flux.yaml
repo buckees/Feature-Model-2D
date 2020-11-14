@@ -3,6 +3,6 @@ Species:
   - Cl+
   - Cl
 Flux:
-  Ar+: 1e15
-  Cl+: 3e15
-  Cl:  1e17
+  Ar+: 1.0e15
+  Cl+: 3.0e15
+  Cl:  1.0e16
