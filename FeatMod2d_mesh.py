@@ -251,17 +251,14 @@ class MESHGRID(object):
         idx = tuple(idx)
         return self.mat[idx], idx
 
-    def update_mat(self, idx, threshold):
+    def change_mat(self, idx, mat_name='Vac'):
         """
         Update materials due to etching.
 
-        threshold: etching probability
-        mat == 2 equivalent to mat == 'Si'
+        idx: a.u., (i, j) tuple, the index of materails to be changed
+        mat_name: str, material name
         """
-        if self.mat[idx] == 2:
-            rnd = np.random.uniform(0.0, 1.0)
-            if rnd < threshold:
-                self.mat[idx] = 0
+        self.mat[idx] = mat_name
 
     def calc_surf_norm(self, idx, radius=1, imode="Fit Plane", bc='Periodic'):
         """
