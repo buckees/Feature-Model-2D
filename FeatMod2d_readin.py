@@ -10,6 +10,7 @@ sp_name = temp['Species']
 sp_flux = temp['Flux']
 sp_flux.update((k, float(v)) for k, v in sp_flux.items())
 
+mat_name = temp['Materials']
 
 from Species import sp_full_list
 
@@ -25,5 +26,6 @@ if __name__ == '__main__':
     from random import choices
     sp_temp = choices(sp_name, weights=sp_weight, k=1)
     print(*sp_temp)
+    print(sp_name)
     
 
