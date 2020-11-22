@@ -6,3 +6,7 @@ Flux:
   Ar+: 1.0e15
   Cl+: 3.0e15
   Cl:  1.0e16
+Materials:
+  - PR_
+  - Si_
+  - SiO2_
