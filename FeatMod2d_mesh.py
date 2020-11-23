@@ -58,7 +58,7 @@ class MESHGRID(object):
 
     def add_mat(self, materials):
         """Assign input materials to the mesh."""
-        self.mater = ['Vac', 'SiO2', 'Si', 'PR']
+        self.mater = ['Vac_', 'PR_', 'Si_', 'SiO2_', 'SiCl_']
 
         for material in materials:
             mater = material[0]
@@ -485,8 +485,7 @@ if __name__ == '__main__':
     from FeatMod2d_ops import width, height, res_x, res_z
     from FeatMod2d_mat import mat0, mat1, mat2, Si2d
     mesh = MESHGRID(width, height, res_x, res_z)
-    mesh.mat_input(Si2d)
-    mesh.find_surf()
+    mesh.add_mat(Si2d)
     mesh.plot()
     
     colMap = copy.copy(cm.get_cmap("Accent"))
