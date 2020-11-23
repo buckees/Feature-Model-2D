@@ -1,5 +1,10 @@
 """Feature Model 2D. Main program."""
 
+import os
+import glob
+for i in glob.glob("*.png"):
+    os.remove(i)
+
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from copy import copy, deepcopy
@@ -12,14 +17,20 @@ from FeatMod2d_ops import (width, height, res_x, res_z, num_ptcl, ibc,
                           num_plot, surf_norm_range, surf_norm_mode)
 from FeatMod2d_mesh import MESHGRID
 from FeatMod2d_ptcl import PARTICLE
-from FeatMod2d_readin import sp_run_list, sp_name, sp_weight
-from FeatMod2d_mat import Si2d_trench
+from FeatMod2d_readin import (sp_run_list, sp_name, sp_weight, mat_name)
+from FeatMod2d_rct import React
+from FeatMod2d_mat import Si2d, Si2d_trench
 from FeatMod2d_rflct import REFLECT
 
 # create mesh
 mesh = MESHGRID(width, height, res_x, res_z)
 print(mesh)
-mesh.add_mat(Si2d_trench)
+mesh.add_mat(Si2d)
+
+# Frame the chem data
+react = React(sp_name=sp_name, mat_name=mat_name)
+react.readin('Chem.csv')
+print(react.df)
 
 delta_L = min(res_x, res_z)*step_fac
 
@@ -45,6 +56,10 @@ for k in range(num_ptcl):
 
     ptcl.dead = 0
     ptcl.init_posn(width, height)
+    if ptcl.ptype == 'Ion':
+        idstrb=['Uniform2D', -5.0, 5.0]
+    elif ptcl.ptype == 'Neut':
+        idstrb=['Uniform2D', -45.0, 45.0]
     ptcl.init_uvec(idstrb)
     num_rflct = 0
     
@@ -64,18 +79,35 @@ for k in range(num_ptcl):
         hit_mat, hit_idx = mesh.hit_check(ptcl.posn)
         if hit_mat:
             rec_traj[-1].append(ptcl.posn.copy())
-            mat_name = mesh.mater[hit_mat]
             ptcl_rflct.svec, ptcl_rflct.stheta = \
                 mesh.calc_surf_norm(hit_idx, radius=surf_norm_range, 
                                     imode=surf_norm_mode)
-            # calc surf norm
-            if mat_name == 'Si':
-                # now ireact = 1
-                mesh.mat[hit_idx] = 0
-                mesh.update_surf(hit_idx)
-                # find the floating cells
-                # mesh.find_float_cell()
-                ptcl.dead = 1
+            
+            # determine react or rflct
+            hit_sp_name = ptcl.name
+            hit_mat_name = mesh.mater[hit_mat]
+            hit_df = react.df[
+                    (react.df['sp'] == hit_sp_name) 
+                    & (react.df['mat'] == hit_mat_name)
+                    ]
+            
+            row, col = hit_df.shape
+            
+            if row > 1:
+                # now more than rflct can occur
+                hit_df_idx = list(hit_df.index)
+                hit_df_prob = list(hit_df['prob'].tolist())    
+                chosen_idx, = choices(hit_df_idx, weights=hit_df_prob, k=1)
+                chosen_df = hit_df.loc[chosen_idx]
+                if chosen_df['type'] == 'rflct':
+                    break
+                elif chosen_df['type'] == 'etch':
+                    mesh.mat[hit_idx] = 0
+                    mesh.update_surf(hit_idx)
+                    ptcl.dead = 1
+                elif chosen_df['type'] == 'chem':
+                    mesh.mat[hit_idx] = 4
+                    ptcl.dead = 1
             else:
                 if num_rflct > max_rflct:
                     ptcl.dead = 1
