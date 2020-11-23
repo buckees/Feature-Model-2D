@@ -8,8 +8,6 @@ from FeatMod2d_readin import sp_name, mat_name
 
 import pandas as pd
 
-print(sp_name, mat_name)
-
 class React():
     """Define reaction structure."""
     
@@ -51,5 +49,6 @@ class React():
 if __name__ == '__main__':
     react = React(sp_name=sp_name, mat_name=mat_name)
     react.readin('Chem.csv')
+    print(react.df)
     
     
