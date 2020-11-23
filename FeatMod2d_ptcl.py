@@ -34,7 +34,7 @@ class PARTICLE(object):
         init_posx = np.random.uniform(0.0, 1.0)*width
         self.posn = np.array([init_posx, height])
 
-    def init_uvec(self, idstrb=['Uniform', -90.0, 90.0]):
+    def init_uvec(self, idstrb=None):
         """
         Initialize the velocity direction.
 
