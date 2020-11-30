@@ -61,3 +61,7 @@ Si2d_trench = Si2d.copy()
 m = [('Vac_', 0),   'rect', (30.0, 25.0, 40.0, 200.0)]
 Si2d_trench.append(m)
 
+# Si2d_trench is designed to verify the bottom reflection
+Si2d_trench_v02 = Si2d.copy()
+m = [('Vac_', 0),   'rect', (30.0, 100.0, 40.0, 200.0)]
+Si2d_trench_v02.append(m)
