@@ -19,13 +19,13 @@ from FeatMod2d_mesh import MESHGRID
 from FeatMod2d_ptcl import PARTICLE
 from FeatMod2d_readin import (sp_run_list, sp_name, sp_weight, mat_name)
 from FeatMod2d_rct import React
-from FeatMod2d_mat import Si2d, Si2d_trench
+from FeatMod2d_mat import Si2d, Si2d_trench_v02
 from FeatMod2d_rflct import REFLECT
 
 # create mesh
 mesh = MESHGRID(width, height, res_x, res_z)
 print(mesh)
-mesh.add_mat(Si2d)
+mesh.add_mat(Si2d_trench_v02)
 
 # Frame the chem data
 react = React(sp_name=sp_name, mat_name=mat_name)
@@ -163,5 +163,11 @@ plot_traj(ax, rec_traj)
 fig.savefig('ptcl_traj.png', dpi=300)
 
 np.save('mesh_mat', mesh.mat)
+np.save('mesh_surf', mesh.surf)
 np.save('mesh_x', mesh.x)
 np.save('mesh_z', mesh.z)
+
+np.savetxt('mesh_mat.csv', mesh.mat, delimiter=',')
+np.savetxt('mesh_surf.csv', mesh.surf, delimiter=',')
+np.savetxt('mesh_x.csv', mesh.x, delimiter=',')
+np.savetxt('mesh_z.csv', mesh.z, delimiter=',')
