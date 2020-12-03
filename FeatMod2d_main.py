@@ -96,53 +96,53 @@ for k in range(num_ptcl):
         rec_traj[-1] = np.array(rec_traj[-1]).T
 
 
-# rec_surf = []
-# for temp_idx in mesh.surf:
-#     temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx, 
-#                                                  radius=surf_norm_range, 
-#                                                  imode=surf_norm_mode)
-#     rec_surf.append([temp_idx, temp_svec])
+rec_surf = []
+for temp_idx in mesh.surf_set:
+    temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx, 
+                                                  radius=surf_norm_range, 
+                                                  imode=surf_norm_mode)
+    rec_surf.append([temp_idx, temp_svec])
 
-# colMap = copy(cm.Accent)
-# colMap.set_under(color='white')
+colMap = copy(cm.Accent)
+colMap.set_under(color='white')
 
-# def plot_traj(ax, traj):
-#     # for i in range(10):
-#     #     ax.plot(traj[num_ptcl - i - 1][0, :], traj[num_ptcl - i - 1][1, :],
-#     #             marker='o', markersize=0.3, linestyle='-', linewidth=0.1)
-#     for temp_ptcl in traj:
-#         ax.plot(temp_ptcl[0, :], temp_ptcl[1, :],
-#                 marker='o', markersize=0.3, linestyle='-', linewidth=0.1)
+def plot_traj(ax, traj):
+    # for i in range(10):
+    #     ax.plot(traj[num_ptcl - i - 1][0, :], traj[num_ptcl - i - 1][1, :],
+    #             marker='o', markersize=0.3, linestyle='-', linewidth=0.1)
+    for temp_ptcl in traj:
+        ax.plot(temp_ptcl[0, :], temp_ptcl[1, :],
+                marker='o', markersize=0.3, linestyle='-', linewidth=0.1)
 
-# def plot_surf_norm(ax, posn, svec):
-#     ax.quiver(posn[0], posn[1],
-#               svec[0], svec[1], 
-#               # scale=50, units='xy',
-#               # headwidth=1, headlength=1, lw=0.01, edgecolors='k',
-#               width=0.001)
+def plot_surf_norm(ax, posn, svec):
+    ax.quiver(posn[0], posn[1],
+              svec[0], svec[1], 
+              # scale=50, units='xy',
+              # headwidth=1, headlength=1, lw=0.01, edgecolors='k',
+              width=0.001)
 
 
-# def plot_mesh(mat, ith):
-#     fig, axes = plt.subplots(1, 2, figsize=(16, 8),
-#                              constrained_layout=True)
+def plot_mesh(mat, ith):
+    fig, axes = plt.subplots(1, 2, figsize=(16, 8),
+                              constrained_layout=True)
     
-#     ax = axes[0]
-#     ax.contourf(mesh.x, mesh.z, mat, cmap=colMap, vmin=0.2, extend='both')
-#     ax.set_xlim(0.0, mesh.width)
-#     ax.set_ylim(0.0, mesh.height)
-#     plot_traj(ax, rec_traj)
+    ax = axes[0]
+    ax.contourf(mesh.x, mesh.z, mat, cmap=colMap, vmin=0.2, extend='both')
+    ax.set_xlim(0.0, mesh.width)
+    ax.set_ylim(0.0, mesh.height)
+    plot_traj(ax, rec_traj)
     
-#     ax = axes[1]
-#     ax.scatter(mesh.x, mesh.z, c=mat, s=1, cmap=colMap, vmin=0.2)
-#     ax.set_xlim(0.0, mesh.width)
-#     ax.set_ylim(0.0, mesh.height)
-#     plot_traj(ax, rec_traj)
-#     for item in rec_surf:
-#         temp_idx, temp_svec = item
-#         temp_posn = np.array([mesh.x[temp_idx], mesh.z[temp_idx]])
-#         plot_surf_norm(ax, temp_posn, temp_svec)
+    ax = axes[1]
+    ax.scatter(mesh.x, mesh.z, c=mat, s=1, cmap=colMap, vmin=0.2)
+    ax.set_xlim(0.0, mesh.width)
+    ax.set_ylim(0.0, mesh.height)
+    plot_traj(ax, rec_traj)
+    for item in rec_surf:
+        temp_idx, temp_svec = item
+        temp_posn = np.array([mesh.x[temp_idx], mesh.z[temp_idx]])
+        plot_surf_norm(ax, temp_posn, temp_svec)
     
-#     fig.savefig('mat_%d.png' % ith, dpi=300)
+    fig.savefig('mat_%d.png' % ith, dpi=300)
 
-# for ith, mat in enumerate(rec_mesh):
-#     plot_mesh(mat, ith+1)
+for ith, mat in enumerate(rec_mesh):
+    plot_mesh(mat, ith+1)
