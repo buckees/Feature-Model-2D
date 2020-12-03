@@ -1,7 +1,8 @@
 sp,mat,prod1,prod2,type,prob
 Ar+,PR_,None,None,etch,0.0001
-Ar+,Si_,None,None,etch,0.01
-Ar+,SiCl_,None,None,etch,0.2
+Ar+,Si_,None,None,etch,0.10
+Ar+,SiCl_,None,None,etch,0.5
 Cl,Si_,SiCl_,None,chem,0.3
+Cl,SiCl_,None,None,etch,0.1
 Cl+,Si_,None,None,etch,0.01
-Cl+,SiCl_,None,None,etch,0.2
+Cl+,SiCl_,None,None,etch,0.8
