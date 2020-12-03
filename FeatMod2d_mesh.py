@@ -337,9 +337,8 @@ class MESHGRID(object):
                 C = A*self.x[idx] + B*self.z[idx]
                 Q = A*sub_x + B*sub_z - C
                 Q = np.multiply(Q, temp_sub_surf)
+                Q = np.power(Q, 2)
                 Qsum = -abs(Q.sum())
-                Q2 = np.power(Q, 2)
-                Qsum += Q2.sum()
                 return Qsum
     
             min_norm = minimize(cost_func_surf_norm, np.pi/4)
@@ -361,7 +360,7 @@ class MESHGRID(object):
             # sub_surf consists of 1(surf) and -1(surf_vac)
             # surf_vac is not used when imode == 2, zero out 1
             temp_sub_surf = np.where(sub_surf == 1, 0, sub_surf)
-            # print(temp_sub_surf)
+            # print(temp_sub_surf, sub_x)
             temp_vecx = np.multiply(self.x[idx] - sub_x, temp_sub_surf)
             temp_vecz = np.multiply(self.z[idx] - sub_z, temp_sub_surf)
             # Calc the vector norm**2
@@ -492,7 +491,7 @@ if __name__ == '__main__':
     colMap.set_under(color='white')
 
     rec_surf = []
-    for temp_idx in mesh.surf:
+    for temp_idx in mesh.surf_set:
         # temp_idx = (224, 13)
         temp_svec, temp_stheta = mesh.calc_surf_norm(temp_idx, 
                                                      radius=4,
@@ -502,7 +501,6 @@ if __name__ == '__main__':
     def plot_surf_norm(ax, posn, svec):
         ax.quiver(posn[0], posn[1],
                   svec[0], svec[1])
-
 
     fig, axes = plt.subplots(1, 2, figsize=(8, 8),
                              constrained_layout=True)
